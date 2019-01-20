@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/cybozu-go/well"
-	"github.com/mitsutaka/zcmd/repos"
+	"github.com/mitsutaka/zcmd"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ var reposUpdateCmd = &cobra.Command{
 	Short: "update fetches and checkouts from remote master branch",
 	Long:  `update fetches and checkouts from remote master branch`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		upd, err := repos.NewUpdater(cfg.Repos.Root)
+		upd, err := zcmd.NewUpdater(cfg.Repos.Root)
 		if err != nil {
 			return err
 		}
