@@ -91,7 +91,7 @@ Configuration example `$HOME/.z.yaml`:
 ```yaml
 repos:
   # Root directory of the git repositories
-  root: ~/git/repos
+  root: /home/mitz/git/repos
 ```
 
 ### Misc

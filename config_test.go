@@ -104,11 +104,11 @@ backup:
 		{
 			source: `
 repos:
-  root: ~/repos
+  root: /repos
 `,
 			expected: Config{
 				Repos: ReposConfig{
-					Root: "~/repos",
+					Root: "/repos",
 				},
 			},
 		},
