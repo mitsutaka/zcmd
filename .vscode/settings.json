@@ -1,7 +1,8 @@
 {
     "go.lintTool": "golangci-lint",
     "go.lintFlags": [
-        "--enable-all",
+        "--presets",
+        "bugs,unused,format,complexity,performance",
         "--verbose",
         "--fast"
     ]
