@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cybozu-go/log"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/mitsutaka/zcmd"
 	"github.com/spf13/cobra"
@@ -15,17 +16,17 @@ var cfg *zcmd.Config
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "z",
-	Short: "mitZ's command utilities",
-	Long:  `Mitz's personal command line utilities.`,
+	Use:          "z",
+	Short:        "mitZ's command utilities",
+	Long:         `Mitz's personal command line utilities.`,
+	SilenceUsage: true,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.ErrorExit(err)
 	}
 }
 
