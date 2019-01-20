@@ -12,7 +12,9 @@ jobs:
       - run:
           name: Setup tools
           command: |
+            GO111MODULE=off go get -v github.com/client9/misspell/cmd/misspell
             curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s
       - run: go get -v -t -d ./...
       - run: ./bin/golangci-lint run --presets bugs,unused,format,complexity,performance --verbose
+      - run: misspell -error .
       - run: go test -v ./...

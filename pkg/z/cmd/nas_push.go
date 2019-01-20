@@ -9,8 +9,8 @@ import (
 // nasPushCmd represents the nas push command
 var nasPushCmd = &cobra.Command{
 	Use:   "push [-n] PATH",
-	Short: "push command pushes given PATH local direcotry to given PATH in the remote server",
-	Long: `push command pushes given PATH local direcotry to given PATH in the remote server.
+	Short: "push command pushes given PATH local directory to given PATH in the remote server",
+	Long: `push command pushes given PATH local directory to given PATH in the remote server.
 
 -n option executes as dry-run.`,
 	Run: func(cmd *cobra.Command, args []string) {

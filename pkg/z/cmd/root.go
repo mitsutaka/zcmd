@@ -18,7 +18,7 @@ var cfg *zcmd.Config
 var rootCmd = &cobra.Command{
 	Use:   "z",
 	Short: "mitZ's command utilities",
-	Long:  `Mitz's personal command line utilities.`,
+	Long:  `Mitz's command line utilities.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
