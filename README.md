@@ -10,25 +10,33 @@
 z
 ```
 
-## `nas` command
+### `nas` command
 
 Operation command for home NAS.
 
 - `z nas pull`: Pull media files from the remote server.
 - `z nas push`: Push media files to the remote server.
 
-## `backup` command
+### `backup` command
 
 Operation command for backup
 
 - `z backup`: Run backup to the remote server.
 
-## `repos` command
+### `repos` command
 
 Operation command for checked out git repositories.
 
 - `z repos update`: Fetch and Checkout git repositories in parallel.
 
-# License
+### Misc
+
+To load bash completion scripts, run:
+
+```console
+. <(z completion)
+```
+
+## License
 
 MIT
