@@ -1,5 +1,9 @@
 # zcmd: mitZ's CoMmanD utilities for personal use
 
+[![CircleCI](https://circleci.com/gh/mitsutaka/zcmd.svg?style=svg)](https://circleci.com/gh/mitsutaka/zcmd)
+[![GoDoc](https://godoc.org/github.com/mitsutaka/zcmd?status.svg)][godoc]
+[![Go Report Card](https://goreportcard.com/badge/github.com/mitsutaka/zcmd)](https://goreportcard.com/report/github.com/mitsutaka/zcmd)
+
 ## Usage
 
 ```console
