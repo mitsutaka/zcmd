@@ -1,4 +1,4 @@
-# mitZ's CoMmanD utilities for personal use
+# zcmd: mitZ's CoMmanD utilities for personal use
 
 ## Usage
 
