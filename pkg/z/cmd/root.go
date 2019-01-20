@@ -16,10 +16,9 @@ var cfg *zcmd.Config
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:          "z",
-	Short:        "mitZ's command utilities",
-	Long:         `Mitz's personal command line utilities.`,
-	SilenceUsage: true,
+	Use:   "z",
+	Short: "mitZ's command utilities",
+	Long:  `Mitz's personal command line utilities.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
