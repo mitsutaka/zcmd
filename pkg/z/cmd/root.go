@@ -5,11 +5,13 @@ import (
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitsutaka/zcmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
+var cfg *zcmd.Config
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -51,6 +53,7 @@ func initConfig() {
 		// Search config in home directory with name ".z" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".z")
+		viper.SetConfigType("yaml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -58,5 +61,10 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+
+	if err := viper.Unmarshal(&cfg); err != nil {
+		fmt.Printf("config file Unmarshal error: %v\n", err)
+		os.Exit(1)
 	}
 }
