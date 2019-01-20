@@ -18,8 +18,8 @@ To configure your bash shell to load completions for each session add to your ba
 
 # ~/.bashrc or ~/.profile
 . <(z completion)`,
-	Run: func(cmd *cobra.Command, args []string) {
-		rootCmd.GenBashCompletion(os.Stdout)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return rootCmd.GenBashCompletion(os.Stdout)
 	},
 }
 
