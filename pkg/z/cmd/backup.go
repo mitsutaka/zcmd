@@ -18,7 +18,7 @@ var backupCmd = &cobra.Command{
 	Short: "backup local data to the remote server",
 	Long:  `backup starts backup process local data to the remote server`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		bk := zcmd.NewBackup(&cfg.Backup)
+		bk := zcmd.NewBackup(&cfg.Backup, backupOpts.dryRun)
 
 		well.Go(func(ctx context.Context) error {
 			bk.Do(ctx)
@@ -30,6 +30,6 @@ var backupCmd = &cobra.Command{
 }
 
 func init() {
-	backupCmd.Flags().BoolVarP(&backupOpts.dryRun, "dry-run", "n", false, "only result of sync")
+	backupCmd.Flags().BoolVarP(&backupOpts.dryRun, "dry-run", "n", false, "dry run")
 	rootCmd.AddCommand(backupCmd)
 }
