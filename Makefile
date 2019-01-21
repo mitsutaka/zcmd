@@ -1,6 +1,6 @@
 test:
 	go get -v -t -d ./...
-	golangci-lint run --presets bugs,unused,format,complexity,performance --verbose
+	golangci-lint run --presets bugs,unused,format,complexity,performance -D unparam --verbose
 	go test -v ./...
 
 setup:
