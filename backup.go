@@ -68,11 +68,16 @@ func (b *Backup) Do(ctx context.Context) {
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
-			log.Printf("backup command: %#v\n", rsyncCmd)
+			log.Printf("backup started: %#v\n", rsyncCmd)
 			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			return cmd.Run()
+			err := cmd.Run()
+			if err != nil {
+				return err
+			}
+			log.Printf("backup finished: %#v\n", rsyncCmd)
+			return nil
 		})
 	}
 	env.Stop()
