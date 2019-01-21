@@ -57,6 +57,7 @@ func (b *Backup) Do(ctx context.Context) {
 	defer func() {
 		pid.Close()
 		os.Remove(pid.Name())
+		os.Remove(exclude)
 	}()
 	_, err = pid.WriteString(string(os.Getpid()))
 	if err != nil {
@@ -76,7 +77,6 @@ func (b *Backup) Do(ctx context.Context) {
 	}
 	env.Stop()
 	_ = env.Wait()
-	os.Remove(exclude)
 }
 
 func (b *Backup) generateRsyncCmd() (map[string][]string, string, error) {
