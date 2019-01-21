@@ -4,4 +4,5 @@ test:
 	go test -v ./...
 
 setup:
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin
+	GO111MODULE=off go get -v github.com/client9/misspell/cmd/misspell
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(shell go env GOPATH)/bin
