@@ -13,16 +13,8 @@ import (
 )
 
 const (
-	pidFile        = "/tmp/backup.pid"
-	datePath       = "backup-0000-00-00-000000"
-	cmdRsyncDarwin = "/usr/local/bin/rsync"
-	cmdRsyncLinux  = "/usr/bin/rsync"
-	optDryRun      = "--dry-run"
-)
-
-var (
-	optsRsync = []string{"-avxRP", "--stats", "--delete"}
-	sudoCmd   = []string{"/usr/bin/sudo", "-E"}
+	pidFile  = "/tmp/backup.pid"
+	datePath = "backup-0000-00-00-000000"
 )
 
 // Backup is client for backup
@@ -34,7 +26,7 @@ type Backup struct {
 }
 
 // NewBackup returns Syncer
-func NewBackup(cfg *BackupConfig, dryRun bool) *Backup {
+func NewBackup(cfg *BackupConfig, dryRun bool) Rsync {
 	return &Backup{
 		includes:     cfg.Includes,
 		excludes:     cfg.Excludes,
@@ -44,15 +36,15 @@ func NewBackup(cfg *BackupConfig, dryRun bool) *Backup {
 }
 
 // Backup is main backup process
-func (b *Backup) Do(ctx context.Context) {
-	rsyncCmds, exclude, err := b.generateRsyncCmd()
+func (b *Backup) Do(ctx context.Context) error {
+	rsyncCmds, exclude, err := b.GenerateCmd()
 	if err != nil {
-		return
+		return err
 	}
 
 	pid, err := os.Create(pidFile)
 	if err != nil {
-		return
+		return err
 	}
 	defer func() {
 		pid.Close()
@@ -61,7 +53,7 @@ func (b *Backup) Do(ctx context.Context) {
 	}()
 	_, err = pid.WriteString(string(os.Getpid()))
 	if err != nil {
-		return
+		return err
 	}
 
 	env := well.NewEnvironment(ctx)
@@ -81,10 +73,10 @@ func (b *Backup) Do(ctx context.Context) {
 		})
 	}
 	env.Stop()
-	_ = env.Wait()
+	return env.Wait()
 }
 
-func (b *Backup) generateRsyncCmd() (map[string][]string, string, error) {
+func (b *Backup) GenerateCmd() (map[string][]string, string, error) {
 	var cmdRsync []string
 	switch runtime.GOOS {
 	case "linux":

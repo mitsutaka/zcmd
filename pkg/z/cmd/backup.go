@@ -21,8 +21,7 @@ var backupCmd = &cobra.Command{
 		bk := zcmd.NewBackup(&cfg.Backup, backupOpts.dryRun)
 
 		well.Go(func(ctx context.Context) error {
-			bk.Do(ctx)
-			return nil
+			return bk.Do(ctx)
 		})
 		well.Stop()
 		return well.Wait()

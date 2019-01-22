@@ -6,28 +6,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var nasPullCmdOpts struct {
+	dryRun bool
+}
+
 // nasPullCmd represents the nas pull command
 var nasPullCmd = &cobra.Command{
-	Use:   "pull [-n] PATH",
+	Use:   "pull [PATH|all]",
 	Short: "pull command pulls given PATH data to given PATH local directory",
 	Long: `pull command pulls given PATH data to given PATH local directory.
 
--n option executes as dry-run.`,
+-n option executes as dry-run.
+all PATH pull all given paths in configuration file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("nas pull called")
 	},
 }
 
 func init() {
+	nasPullCmd.Flags().BoolVarP(&nasPullCmdOpts.dryRun, "dry-run", "n", false, "dry run")
 	nasCmd.AddCommand(nasPullCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// nasCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// nasCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
