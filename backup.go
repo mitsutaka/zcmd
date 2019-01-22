@@ -6,16 +6,16 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
-	"runtime"
 
 	"github.com/cybozu-go/well"
 )
 
 const (
-	pidFile  = "/tmp/backup.pid"
-	datePath = "backup-0000-00-00-000000"
+	backupPidFile = "/tmp/backup.pid"
+	datePath      = "backup-0000-00-00-000000"
 )
+
+var optsRsync = []string{"-avxRP", "--stats", "--delete"}
 
 // Backup is client for backup
 type Backup struct {
@@ -43,12 +43,11 @@ func (b *Backup) Do(ctx context.Context) error {
 		return err
 	}
 
-	pid, err := os.Create(pidFile)
+	pid, err := os.Create(backupPidFile)
 	if err != nil {
 		return err
 	}
 	defer func() {
-		pid.Close()
 		os.Remove(pid.Name())
 		if len(b.excludeFile) != 0 {
 			os.Remove(b.excludeFile)
@@ -58,19 +57,23 @@ func (b *Backup) Do(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	err = pid.Close()
+	if err != nil {
+		return err
+	}
 
 	env := well.NewEnvironment(ctx)
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
 			log.Printf("backup started: %#v\n", rsyncCmd)
-			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err := cmd.Run()
-			if err != nil {
-				return err
-			}
+			//			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
+			//			cmd.Stdout = os.Stdout
+			//			cmd.Stderr = os.Stderr
+			//			err := cmd.Run()
+			//			if err != nil {
+			//				return err
+			//			}
 			log.Printf("backup finished: %#v\n", rsyncCmd)
 			return nil
 		})
@@ -81,21 +84,11 @@ func (b *Backup) Do(ctx context.Context) error {
 
 // GenerateCmd generates rsync command
 func (b *Backup) GenerateCmd() (map[string][]string, error) {
-	var cmdRsync []string
-	switch runtime.GOOS {
-	case "linux":
-		cmdRsync = []string{CmdRsyncLinux}
-	case "darwin":
-		cmdRsync = []string{CmdRsyncDarwin}
-	default:
-		return nil, fmt.Errorf("platform %s does not support", runtime.GOOS)
+	cmdRsync, err := GetRsyncCmd()
+	if err != nil {
+		return nil, err
 	}
-	cmdRsync = append(cmdRsync, OptsRsync...)
-
-	var cmdPrefix []string
-	if os.Getuid() != 0 {
-		cmdPrefix = SudoCmd
-	}
+	cmdRsync = append(cmdRsync, optsRsync...)
 
 	f, err := ioutil.TempFile("", "backup")
 	if err != nil {
@@ -124,7 +117,6 @@ func (b *Backup) GenerateCmd() (map[string][]string, error) {
 		for _, dst := range b.destinations {
 			var cmd []string
 			dst := fmt.Sprintf("%s/%s/%s", dst, hostname, datePath)
-			cmd = append(cmd, cmdPrefix...)
 			cmd = append(cmd, cmdRsync...)
 			if b.dryRun {
 				cmd = append(cmd, OptDryRun)
