@@ -22,6 +22,7 @@ type Backup struct {
 	destinations []string
 	includes     []string
 	excludes     []string
+	excludeFile  string
 	dryRun       bool
 }
 
@@ -35,9 +36,9 @@ func NewBackup(cfg *BackupConfig, dryRun bool) Rsync {
 	}
 }
 
-// Backup is main backup process
+// Do is main backup process
 func (b *Backup) Do(ctx context.Context) error {
-	rsyncCmds, exclude, err := b.GenerateCmd()
+	rsyncCmds, err := b.GenerateCmd()
 	if err != nil {
 		return err
 	}
@@ -49,7 +50,9 @@ func (b *Backup) Do(ctx context.Context) error {
 	defer func() {
 		pid.Close()
 		os.Remove(pid.Name())
-		os.Remove(exclude)
+		if len(b.excludeFile) != 0 {
+			os.Remove(b.excludeFile)
+		}
 	}()
 	_, err = pid.WriteString(string(os.Getpid()))
 	if err != nil {
@@ -76,26 +79,27 @@ func (b *Backup) Do(ctx context.Context) error {
 	return env.Wait()
 }
 
-func (b *Backup) GenerateCmd() (map[string][]string, string, error) {
+// GenerateCmd generates rsync command
+func (b *Backup) GenerateCmd() (map[string][]string, error) {
 	var cmdRsync []string
 	switch runtime.GOOS {
 	case "linux":
-		cmdRsync = []string{cmdRsyncLinux}
+		cmdRsync = []string{CmdRsyncLinux}
 	case "darwin":
-		cmdRsync = []string{cmdRsyncDarwin}
+		cmdRsync = []string{CmdRsyncDarwin}
 	default:
-		return nil, "", fmt.Errorf("platform %s does not support", runtime.GOOS)
+		return nil, fmt.Errorf("platform %s does not support", runtime.GOOS)
 	}
-	cmdRsync = append(cmdRsync, optsRsync...)
+	cmdRsync = append(cmdRsync, OptsRsync...)
 
 	var cmdPrefix []string
 	if os.Getuid() != 0 {
-		cmdPrefix = sudoCmd
+		cmdPrefix = SudoCmd
 	}
 
 	f, err := ioutil.TempFile("", "backup")
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 	defer f.Close()
 
@@ -104,16 +108,17 @@ func (b *Backup) GenerateCmd() (map[string][]string, string, error) {
 		for _, path := range b.excludes {
 			_, err := f.WriteString(path + "\n")
 			if err != nil {
-				return nil, "", err
+				return nil, err
 			}
 		}
 		optExclude = fmt.Sprintf("--exclude-from=%s", f.Name())
+		b.excludeFile = f.Name()
 	}
 
 	cmds := make(map[string][]string)
 	hostname, err := os.Hostname()
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 	for _, src := range b.includes {
 		for _, dst := range b.destinations {
@@ -122,12 +127,12 @@ func (b *Backup) GenerateCmd() (map[string][]string, string, error) {
 			cmd = append(cmd, cmdPrefix...)
 			cmd = append(cmd, cmdRsync...)
 			if b.dryRun {
-				cmd = append(cmd, optDryRun)
+				cmd = append(cmd, OptDryRun)
 			}
 			cmd = append(cmd, optExclude, src, dst)
 			cmds[src] = cmd
 		}
 	}
 
-	return cmds, f.Name(), nil
+	return cmds, nil
 }

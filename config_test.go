@@ -18,12 +18,14 @@ func TestConfig(t *testing.T) {
 			source: `
 nas:
   pull:
-    source: url
-    destinations:
+    url: url
+    sync:
       - name: foo
-        path: /foo
+        source: /foo
+        destination: /tmp/foo
       - name: bar
-        path: /bar
+        source: /bar
+        destination: /tmp/bar
         excludes:
           - aaa
           - bbb
@@ -31,16 +33,18 @@ nas:
 			expected: Config{
 				Nas: NasConfig{
 					Pull: NasPullConfig{
-						Source: "url",
-						Destinations: []PathInfo{
+						URL: "url",
+						Sync: []SyncInfo{
 							{
-								Name: "foo",
-								Path: "/foo",
+								Name:        "foo",
+								Source:      "/foo",
+								Destination: "/tmp/foo",
 							},
 							{
-								Name:     "bar",
-								Path:     "/bar",
-								Excludes: []string{"aaa", "bbb"},
+								Name:        "bar",
+								Source:      "/bar",
+								Destination: "/tmp/bar",
+								Excludes:    []string{"aaa", "bbb"},
 							},
 						},
 					},

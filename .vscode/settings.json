@@ -3,7 +3,6 @@
     "go.lintFlags": [
         "--presets",
         "bugs,unused,format,complexity,performance",
-        "--verbose",
         "--fast"
     ]
 }

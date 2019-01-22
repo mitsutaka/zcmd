@@ -1,8 +1,10 @@
 package cmd
 
 import (
-	"fmt"
+	"context"
 
+	"github.com/cybozu-go/well"
+	"github.com/mitsutaka/zcmd/nas"
 	"github.com/spf13/cobra"
 )
 
@@ -18,8 +20,14 @@ var nasPullCmd = &cobra.Command{
 
 -n option executes as dry-run.
 all PATH pull all given paths in configuration file.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("nas pull called")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		sync := nas.NewPull(&cfg.Nas.Pull, nasPullCmdOpts.dryRun)
+
+		well.Go(func(ctx context.Context) error {
+			return sync.Do(ctx)
+		})
+		well.Stop()
+		return well.Wait()
 	},
 }
 
