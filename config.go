@@ -9,27 +9,8 @@ type Config struct {
 
 // NasConfig is nas: config
 type NasConfig struct {
-	Pull NasPullConfig `yaml:"pull,omitempty"`
-	Push NasPushConfig `yaml:"push,omitempty"`
-}
-
-// NasPullConfig is pull: config
-type NasPullConfig struct {
-	URL  string     `yaml:"url"`
-	Sync []SyncInfo `yaml:"sync"`
-}
-
-// NasPushConfig is push: config
-type NasPushConfig struct {
-	Sources     []PathInfo `yaml:"sources"`
-	Destination string     `yaml:"destination"`
-}
-
-// PathInfo is path information for synchronize directories
-type PathInfo struct {
-	Name     string   `yaml:"name"`
-	Path     string   `yaml:"path"`
-	Excludes []string `yaml:"excludes,omitempty"`
+	Pull []SyncInfo `yaml:"pull,omitempty"`
+	Push []SyncInfo `yaml:"push,omitempty"`
 }
 
 // SyncInfo is path information for synchronize directories

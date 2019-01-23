@@ -18,34 +18,29 @@ func TestConfig(t *testing.T) {
 			source: `
 nas:
   pull:
-    url: url
-    sync:
-      - name: foo
-        source: /foo
-        destination: /tmp/foo
-      - name: bar
-        source: /bar
-        destination: /tmp/bar
-        excludes:
-          - aaa
-          - bbb
+    - name: foo
+      source: /foo
+      destination: /tmp/foo
+    - name: bar
+      source: /bar
+      destination: /tmp/bar
+      excludes:
+        - aaa
+        - bbb
 `,
 			expected: Config{
 				Nas: NasConfig{
-					Pull: NasPullConfig{
-						URL: "url",
-						Sync: []SyncInfo{
-							{
-								Name:        "foo",
-								Source:      "/foo",
-								Destination: "/tmp/foo",
-							},
-							{
-								Name:        "bar",
-								Source:      "/bar",
-								Destination: "/tmp/bar",
-								Excludes:    []string{"aaa", "bbb"},
-							},
+					Pull: []SyncInfo{
+						{
+							Name:        "foo",
+							Source:      "/foo",
+							Destination: "/tmp/foo",
+						},
+						{
+							Name:        "bar",
+							Source:      "/bar",
+							Destination: "/tmp/bar",
+							Excludes:    []string{"aaa", "bbb"},
 						},
 					},
 				},
@@ -55,31 +50,30 @@ nas:
 			source: `
 nas:
   push:
-    sources:
-      - name: foo
-        path: /foo
-      - name: bar
-        path: /bar
-        excludes:
-          - aaa
-          - bbb
-    destination: url
+    - name: foo
+      source: /foo
+      destination: /tmp/foo
+    - name: bar
+      source: /bar
+      destination: /tmp/bar
+      excludes:
+        - aaa
+        - bbb
 `,
 			expected: Config{
 				Nas: NasConfig{
-					Push: NasPushConfig{
-						Sources: []PathInfo{
-							{
-								Name: "foo",
-								Path: "/foo",
-							},
-							{
-								Name:     "bar",
-								Path:     "/bar",
-								Excludes: []string{"aaa", "bbb"},
-							},
+					Push: []SyncInfo{
+						{
+							Name:        "foo",
+							Source:      "/foo",
+							Destination: "/tmp/foo",
 						},
-						Destination: "url",
+						{
+							Name:        "bar",
+							Source:      "/bar",
+							Destination: "/tmp/bar",
+							Excludes:    []string{"aaa", "bbb"},
+						},
 					},
 				},
 			},

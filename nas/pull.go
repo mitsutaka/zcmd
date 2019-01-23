@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/url"
 	"os"
 	"os/exec"
-	"path"
+	"strings"
 
 	"github.com/cybozu-go/well"
 	"github.com/mitsutaka/zcmd"
@@ -17,18 +16,16 @@ import (
 // Pull is client for nas pull
 type Pull struct {
 	argSyncs     []string
-	url          string
-	cfgSyncs     []zcmd.SyncInfo
+	cfgSyncs     *[]zcmd.SyncInfo
 	excludeFiles []string
 	dryRun       bool
 }
 
 // NewPull returns Syncer
-func NewPull(cfg *zcmd.NasPullConfig, argSyncs []string, dryRun bool) zcmd.Rsync {
+func NewPull(sync *[]zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
 	return &Pull{
 		argSyncs: argSyncs,
-		url:      cfg.URL,
-		cfgSyncs: cfg.Sync,
+		cfgSyncs: sync,
 		dryRun:   dryRun,
 	}
 }
@@ -63,7 +60,7 @@ func (p *Pull) Do(ctx context.Context) error {
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
-			log.Printf("sync started: %#v\n", rsyncCmd)
+			log.Printf("pull started: %#v\n", rsyncCmd)
 			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -71,7 +68,7 @@ func (p *Pull) Do(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			log.Printf("backup finished: %#v\n", rsyncCmd)
+			log.Printf("pull finished: %#v\n", rsyncCmd)
 			return nil
 		})
 	}
@@ -107,7 +104,7 @@ func (p *Pull) GenerateCmd() (map[string][]string, error) {
 	}
 	cmdRsync = append(cmdRsync, optsRsync...)
 
-	targetSyncs := findTargetSyncs(p.cfgSyncs, p.argSyncs)
+	targetSyncs := findTargetSyncs(*p.cfgSyncs, p.argSyncs)
 
 	cmds := make(map[string][]string)
 	for _, sync := range targetSyncs {
@@ -130,11 +127,7 @@ func (p *Pull) GenerateCmd() (map[string][]string, error) {
 		}
 
 		var cmd []string
-		u, err := url.Parse(p.url)
-		if err != nil {
-			return nil, err
-		}
-		u.Path = path.Join(u.Path, sync.Source)
+		src := sync.Source
 		dst := sync.Destination
 		cmd = append(cmd, cmdRsync...)
 		if p.dryRun {
@@ -144,7 +137,10 @@ func (p *Pull) GenerateCmd() (map[string][]string, error) {
 			cmd = append(cmd, optExclude)
 		}
 		// Add "/" to sync all files in the source URL directory
-		cmd = append(cmd, u.String()+"/", dst)
+		if !strings.HasSuffix(src, "/") {
+			src = src + "/"
+		}
+		cmd = append(cmd, src, dst)
 		cmds[sync.Name] = cmd
 	}
 

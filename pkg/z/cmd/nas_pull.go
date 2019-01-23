@@ -25,7 +25,7 @@ var nasPullCmd = &cobra.Command{
 Whe PATH is not given, all PATHs in configuration file will be synchronized.`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		for _, arg := range args {
-			for _, path := range cfg.Nas.Pull.Sync {
+			for _, path := range cfg.Nas.Pull {
 				if arg == path.Name {
 					nasPullCmdOpts.syncPaths = append(nasPullCmdOpts.syncPaths, path.Name)
 				}
@@ -34,7 +34,6 @@ Whe PATH is not given, all PATHs in configuration file will be synchronized.`,
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		fmt.Printf("%#v\n", nasPullCmdOpts.syncPaths)
 		sync := nas.NewPull(&cfg.Nas.Pull, args, nasPullCmdOpts.dryRun)
 
