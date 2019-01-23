@@ -16,20 +16,25 @@ var nasPullCmdOpts struct {
 
 // nasPullCmd represents the nas pull command
 var nasPullCmd = &cobra.Command{
-	Use:   "pull [PATH|all]",
+	Use:   "pull [PATH]",
 	Short: "pull command pulls given PATH data to given PATH local directory",
 	Long: `pull command pulls given PATH data to given PATH local directory.
 
 -n option executes as dry-run.
-all PATH pull all given paths in configuration file.`,
+
+Whe PATH is not given, all PATHs in configuration file will be synchronized.`,
 	Args: func(cmd *cobra.Command, args []string) error {
-		cobra.MinimumNArgs(1)
-		for _, path := range cfg.Nas.Pull.Sync {
-			nasPullCmdOpts.syncPaths = append(nasPullCmdOpts.syncPaths, path.Name)
+		for _, arg := range args {
+			for _, path := range cfg.Nas.Pull.Sync {
+				if arg == path.Name {
+					nasPullCmdOpts.syncPaths = append(nasPullCmdOpts.syncPaths, path.Name)
+				}
+			}
 		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+
 		fmt.Printf("%#v\n", nasPullCmdOpts.syncPaths)
 		sync := nas.NewPull(&cfg.Nas.Pull, args, nasPullCmdOpts.dryRun)
 

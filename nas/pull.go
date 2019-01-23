@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"os/exec"
 	"path"
 
 	"github.com/cybozu-go/well"
@@ -63,14 +64,14 @@ func (p *Pull) Do(ctx context.Context) error {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
 			log.Printf("sync started: %#v\n", rsyncCmd)
-			//			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
-			//			cmd.Stdout = os.Stdout
-			//			cmd.Stderr = os.Stderr
-			//			err := cmd.Run()
-			//			if err != nil {
-			//				return err
-			//			}
-			//			log.Printf("backup finished: %#v\n", rsyncCmd)
+			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err := cmd.Run()
+			if err != nil {
+				return err
+			}
+			log.Printf("backup finished: %#v\n", rsyncCmd)
 			return nil
 		})
 	}
@@ -81,9 +82,6 @@ func (p *Pull) Do(ctx context.Context) error {
 
 func findTargetSyncs(cfgs []zcmd.SyncInfo, args []string) []zcmd.SyncInfo {
 	if len(args) == 0 {
-		return nil
-	}
-	if args[0] == syncAllPath {
 		// Sync all paths
 		return cfgs
 	}

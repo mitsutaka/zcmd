@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/cybozu-go/well"
 )
@@ -67,13 +68,13 @@ func (b *Backup) Do(ctx context.Context) error {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
 			log.Printf("backup started: %#v\n", rsyncCmd)
-			//			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
-			//			cmd.Stdout = os.Stdout
-			//			cmd.Stderr = os.Stderr
-			//			err := cmd.Run()
-			//			if err != nil {
-			//				return err
-			//			}
+			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err := cmd.Run()
+			if err != nil {
+				return err
+			}
 			log.Printf("backup finished: %#v\n", rsyncCmd)
 			return nil
 		})
