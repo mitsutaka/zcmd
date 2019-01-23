@@ -13,25 +13,25 @@ import (
 	"github.com/mitsutaka/zcmd"
 )
 
-// Pull is client for nas pull
-type Pull struct {
+// Push is client for nas push
+type Push struct {
 	argSyncs     []string
 	cfgSyncs     *[]zcmd.SyncInfo
 	excludeFiles []string
 	dryRun       bool
 }
 
-// NewPull returns Syncer
-func NewPull(sync *[]zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
-	return &Pull{
+// NewPush returns Syncer
+func NewPush(sync *[]zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
+	return &Push{
 		argSyncs: argSyncs,
 		cfgSyncs: sync,
 		dryRun:   dryRun,
 	}
 }
 
-// Do is main pulling process
-func (p *Pull) Do(ctx context.Context) error {
+// Do is main pushing process
+func (p *Push) Do(ctx context.Context) error {
 	rsyncCmds, err := p.GenerateCmd()
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (p *Pull) Do(ctx context.Context) error {
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
-			log.Printf("pull started: %#v\n", rsyncCmd)
+			log.Printf("push started: %#v\n", rsyncCmd)
 			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -68,7 +68,7 @@ func (p *Pull) Do(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			log.Printf("pull finished: %#v\n", rsyncCmd)
+			log.Printf("push finished: %#v\n", rsyncCmd)
 			return nil
 		})
 	}
@@ -78,7 +78,7 @@ func (p *Pull) Do(ctx context.Context) error {
 }
 
 // GenerateCmd generates rsync command
-func (p *Pull) GenerateCmd() (map[string][]string, error) {
+func (p *Push) GenerateCmd() (map[string][]string, error) {
 	cmdRsync, err := zcmd.GetRsyncCmd()
 	if err != nil {
 		return nil, err
@@ -108,8 +108,8 @@ func (p *Pull) GenerateCmd() (map[string][]string, error) {
 		}
 
 		var cmd []string
-		src := sync.Source
 		dst := sync.Destination
+		src := sync.Source
 		cmd = append(cmd, cmdRsync...)
 		if p.dryRun {
 			cmd = append(cmd, zcmd.OptDryRun)

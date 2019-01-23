@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/cybozu-go/well"
 	"github.com/mitsutaka/zcmd/nas"
@@ -22,7 +21,7 @@ var nasPullCmd = &cobra.Command{
 
 -n option executes as dry-run.
 
-Whe PATH is not given, all PATHs in configuration file will be synchronized.`,
+When PATH is not given, all PATHs in configuration file will be synchronized.`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		for _, arg := range args {
 			for _, path := range cfg.Nas.Pull {
@@ -34,7 +33,6 @@ Whe PATH is not given, all PATHs in configuration file will be synchronized.`,
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Printf("%#v\n", nasPullCmdOpts.syncPaths)
 		sync := nas.NewPull(&cfg.Nas.Pull, args, nasPullCmdOpts.dryRun)
 
 		well.Go(func(ctx context.Context) error {
