@@ -60,7 +60,7 @@ func (p *Pull) Do(ctx context.Context) error {
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
-			log.Printf("pull started: %#v\n", rsyncCmd)
+			log.Printf("pull started: %s\n", strings.Join(rsyncCmd, " "))
 			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -68,7 +68,7 @@ func (p *Pull) Do(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			log.Printf("pull finished: %#v\n", rsyncCmd)
+			log.Printf("pull finished: %s\n", strings.Join(rsyncCmd, " "))
 			return nil
 		})
 	}
