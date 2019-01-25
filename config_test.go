@@ -16,7 +16,7 @@ func TestConfig(t *testing.T) {
 	}{
 		{
 			source: `
-nas:
+sync:
   pull:
     - name: foo
       source: /foo
@@ -29,7 +29,7 @@ nas:
         - bbb
 `,
 			expected: Config{
-				Nas: NasConfig{
+				Sync: SyncConfig{
 					Pull: []SyncInfo{
 						{
 							Name:        "foo",
@@ -48,7 +48,7 @@ nas:
 		},
 		{
 			source: `
-nas:
+sync:
   push:
     - name: foo
       source: /foo
@@ -61,7 +61,7 @@ nas:
         - bbb
 `,
 			expected: Config{
-				Nas: NasConfig{
+				Sync: SyncConfig{
 					Push: []SyncInfo{
 						{
 							Name:        "foo",

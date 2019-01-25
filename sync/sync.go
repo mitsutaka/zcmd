@@ -1,4 +1,4 @@
-package nas
+package sync
 
 import "github.com/mitsutaka/zcmd"
 

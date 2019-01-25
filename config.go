@@ -2,13 +2,13 @@ package zcmd
 
 // Config zcmd config
 type Config struct {
-	Nas    NasConfig    `yaml:"nas,omitempty"`
+	Sync   SyncConfig   `yaml:"sync,omitempty"`
 	Backup BackupConfig `yaml:"backup,omitempty"`
 	Repos  ReposConfig  `yaml:"repos,omitempty"`
 }
 
-// NasConfig is nas: config
-type NasConfig struct {
+// SyncConfig is sync: config
+type SyncConfig struct {
 	Pull []SyncInfo `yaml:"pull,omitempty"`
 	Push []SyncInfo `yaml:"push,omitempty"`
 }

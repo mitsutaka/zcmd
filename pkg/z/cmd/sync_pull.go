@@ -4,17 +4,17 @@ import (
 	"context"
 
 	"github.com/cybozu-go/well"
-	"github.com/mitsutaka/zcmd/nas"
+	"github.com/mitsutaka/zcmd/sync"
 	"github.com/spf13/cobra"
 )
 
-var nasPullCmdOpts struct {
+var syncPullCmdOpts struct {
 	dryRun    bool
 	syncPaths []string
 }
 
-// nasPullCmd represents the nas pull command
-var nasPullCmd = &cobra.Command{
+// syncPullCmd represents the sync pull command
+var syncPullCmd = &cobra.Command{
 	Use:   "pull [PATH]",
 	Short: "pull command pulls given PATH data to given PATH local directory",
 	Long: `pull command pulls given PATH data to given PATH local directory.
@@ -24,16 +24,16 @@ var nasPullCmd = &cobra.Command{
 When PATH is not given, all PATHs in configuration file will be synchronized.`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		for _, arg := range args {
-			for _, path := range cfg.Nas.Pull {
+			for _, path := range cfg.Sync.Pull {
 				if arg == path.Name {
-					nasPullCmdOpts.syncPaths = append(nasPullCmdOpts.syncPaths, path.Name)
+					syncPullCmdOpts.syncPaths = append(syncPullCmdOpts.syncPaths, path.Name)
 				}
 			}
 		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sync := nas.NewPull(&cfg.Nas.Pull, args, nasPullCmdOpts.dryRun)
+		sync := sync.NewPull(&cfg.Sync.Pull, args, syncPullCmdOpts.dryRun)
 
 		well.Go(func(ctx context.Context) error {
 			return sync.Do(ctx)
@@ -44,6 +44,6 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 }
 
 func init() {
-	nasPullCmd.Flags().BoolVarP(&nasPullCmdOpts.dryRun, "dry-run", "n", false, "dry run")
-	nasCmd.AddCommand(nasPullCmd)
+	syncPullCmd.Flags().BoolVarP(&syncPullCmdOpts.dryRun, "dry-run", "n", false, "dry run")
+	syncCmd.AddCommand(syncPullCmd)
 }

@@ -1,7 +1,7 @@
-package nas
+package sync
 
 const (
-	nasPidFile = "/tmp/nas.pid"
+	syncPidFile = "/tmp/sync.pid"
 )
 
 var optsRsync = []string{"-avP", "--stats", "--delete", "--delete-excluded"}

@@ -10,56 +10,52 @@
 z
 ```
 
-### `nas` command
+### `sync` command
 
-Operation command for home NAS.
+`rsync` wrapper command for servers. It plans replace it with Go native sync library.
 
-- `z nas pull`: Pull media files from the remote server.
-- `z nas push`: Push media files to the remote server.
+- `z sync pull`: Pull files from the remote server in parallel.
+- `z sync push`: Push files to the remote server in parallel.
 
 Configuration example `$HOME/.z.yaml`:
 
 ```yaml
-nas:
+sync:
   # Config for pulling
   pull:
-    # Source URL for pulling
-    source: rsync://URL
-    # Destination paths
-    destinations:
-      # This name uses when command runs with particular path
-      - name: tv
+    # It uses when command runs with particular path
+    - name: movie
+      # Source URL for pulling
+      source: RSYNC_URL
       # Destination directory
-        path: /mnt/nas/tv
-      - name: movie
-        path: /mnt/nas/movie
-        # Exclude pattern
-        excludes:
-          - xxxx
-          - yyyy
+      destination: /mnt/nas/movie
+    - name: picture
+      source: RSYNC_URL
+      destination: /mnt/nas/picture
+      # Exclude pattern
+      excludes:
+        - xxxx
+        - yyyy
   # Config for pushing
   push:
-    # Source directories
-    sources:
-      - name: dvd
-        path: /mnt/nas/dvd
-        excludes:
-          - zzzz
-    # Destination URL for pushing
-    destination: rsync://URL
+    - name: music
+      source: /mnt/nas/music
+      destination: RSYNC_URL
+      excludes:
+        - zzzz
 ```
 
 ### `backup` command
 
-Operation command for backup
+`rsync` wrapper command for backup.
 
-- `z backup`: Run backup to the remote server.
+- `z backup`: Run backup to the remote server in parallel.
 
 Configuration example `$HOME/.z.yaml`:
 
 ```yaml
 backup:
-  # Backup URL
+  # Backup URLs
   destinations:
     - rsync://BACKUP_URL
   # Include backup paths

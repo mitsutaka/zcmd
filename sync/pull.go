@@ -1,4 +1,4 @@
-package nas
+package sync
 
 import (
 	"context"
@@ -13,31 +13,31 @@ import (
 	"github.com/mitsutaka/zcmd"
 )
 
-// Push is client for nas push
-type Push struct {
+// Pull is client for sync pull
+type Pull struct {
 	argSyncs     []string
 	cfgSyncs     *[]zcmd.SyncInfo
 	excludeFiles []string
 	dryRun       bool
 }
 
-// NewPush returns Syncer
-func NewPush(sync *[]zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
-	return &Push{
+// NewPull returns Syncer
+func NewPull(sync *[]zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
+	return &Pull{
 		argSyncs: argSyncs,
 		cfgSyncs: sync,
 		dryRun:   dryRun,
 	}
 }
 
-// Do is main pushing process
-func (p *Push) Do(ctx context.Context) error {
+// Do is main pulling process
+func (p *Pull) Do(ctx context.Context) error {
 	rsyncCmds, err := p.GenerateCmd()
 	if err != nil {
 		return err
 	}
 
-	pid, err := os.Create(nasPidFile)
+	pid, err := os.Create(syncPidFile)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (p *Push) Do(ctx context.Context) error {
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
-			log.Printf("push started: %s\n", strings.Join(rsyncCmd, " "))
+			log.Printf("pull started: %s\n", strings.Join(rsyncCmd, " "))
 			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -68,7 +68,7 @@ func (p *Push) Do(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			log.Printf("push finished: %s\n", strings.Join(rsyncCmd, " "))
+			log.Printf("pull finished: %s\n", strings.Join(rsyncCmd, " "))
 			return nil
 		})
 	}
@@ -78,7 +78,7 @@ func (p *Push) Do(ctx context.Context) error {
 }
 
 // GenerateCmd generates rsync command
-func (p *Push) GenerateCmd() (map[string][]string, error) {
+func (p *Pull) GenerateCmd() (map[string][]string, error) {
 	cmdRsync, err := zcmd.GetRsyncCmd()
 	if err != nil {
 		return nil, err
@@ -108,8 +108,8 @@ func (p *Push) GenerateCmd() (map[string][]string, error) {
 		}
 
 		var cmd []string
-		dst := sync.Destination
 		src := sync.Source
+		dst := sync.Destination
 		cmd = append(cmd, cmdRsync...)
 		if p.dryRun {
 			cmd = append(cmd, zcmd.OptDryRun)
