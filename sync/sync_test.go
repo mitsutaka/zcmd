@@ -11,12 +11,12 @@ func TestBackup(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		cfgs     []zcmd.SyncInfo
+		cfgs     []*zcmd.SyncInfo
 		args     []string
-		expected []zcmd.SyncInfo
+		expected []*zcmd.SyncInfo
 	}{
 		{
-			cfgs: []zcmd.SyncInfo{
+			cfgs: []*zcmd.SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -30,7 +30,7 @@ func TestBackup(t *testing.T) {
 				},
 			},
 			args: []string{},
-			expected: []zcmd.SyncInfo{
+			expected: []*zcmd.SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -45,7 +45,7 @@ func TestBackup(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []zcmd.SyncInfo{
+			cfgs: []*zcmd.SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -59,7 +59,7 @@ func TestBackup(t *testing.T) {
 				},
 			},
 			args: []string{"foo"},
-			expected: []zcmd.SyncInfo{
+			expected: []*zcmd.SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -68,7 +68,7 @@ func TestBackup(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []zcmd.SyncInfo{
+			cfgs: []*zcmd.SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -82,7 +82,7 @@ func TestBackup(t *testing.T) {
 				},
 			},
 			args: []string{"foo", "bar"},
-			expected: []zcmd.SyncInfo{
+			expected: []*zcmd.SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",

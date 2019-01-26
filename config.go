@@ -9,8 +9,8 @@ type Config struct {
 
 // SyncConfig is sync: config
 type SyncConfig struct {
-	Pull []SyncInfo `yaml:"pull,omitempty"`
-	Push []SyncInfo `yaml:"push,omitempty"`
+	Pull []*SyncInfo `yaml:"pull,omitempty"`
+	Push []*SyncInfo `yaml:"push,omitempty"`
 }
 
 // SyncInfo is path information for synchronize directories

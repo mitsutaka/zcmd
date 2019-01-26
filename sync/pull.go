@@ -17,13 +17,13 @@ import (
 // Pull is client for sync pull
 type Pull struct {
 	argSyncs     []string
-	cfgSyncs     *[]zcmd.SyncInfo
+	cfgSyncs     []*zcmd.SyncInfo
 	excludeFiles []string
 	dryRun       bool
 }
 
 // NewPull returns Syncer
-func NewPull(sync *[]zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
+func NewPull(sync []*zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
 	return &Pull{
 		argSyncs: argSyncs,
 		cfgSyncs: sync,
@@ -96,7 +96,7 @@ func (p *Pull) GenerateCmd() (map[string][]string, error) {
 	}
 	cmdRsync = append(cmdRsync, optsRsync...)
 
-	targetSyncs := findTargetSyncs(*p.cfgSyncs, p.argSyncs)
+	targetSyncs := findTargetSyncs(p.cfgSyncs, p.argSyncs)
 
 	cmds := make(map[string][]string)
 	for _, sync := range targetSyncs {

@@ -30,7 +30,7 @@ sync:
 `,
 			expected: Config{
 				Sync: SyncConfig{
-					Pull: []SyncInfo{
+					Pull: []*SyncInfo{
 						{
 							Name:        "foo",
 							Source:      "/foo",
@@ -62,7 +62,7 @@ sync:
 `,
 			expected: Config{
 				Sync: SyncConfig{
-					Push: []SyncInfo{
+					Push: []*SyncInfo{
 						{
 							Name:        "foo",
 							Source:      "/foo",

@@ -33,7 +33,7 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		sync := sync.NewPush(&cfg.Sync.Push, args, syncPushCmdOpts.dryRun)
+		sync := sync.NewPush(cfg.Sync.Push, args, syncPushCmdOpts.dryRun)
 
 		well.Go(func(ctx context.Context) error {
 			return sync.Do(ctx)
