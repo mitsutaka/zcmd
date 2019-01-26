@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/cybozu-go/well"
 	"github.com/mitsutaka/zcmd"
@@ -60,15 +61,25 @@ func (p *Push) Do(ctx context.Context) error {
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
-			log.Printf("push started: %s\n", strings.Join(rsyncCmd, " "))
+			log.WithFields(log.Fields{
+				"command": strings.Join(rsyncCmd, " "),
+			}).Info("sync push started")
+
 			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
+				log.WithFields(log.Fields{
+					"command": strings.Join(rsyncCmd, " "),
+					"error":   err,
+				}).Error("sync push finished")
+
 				return err
 			}
-			log.Printf("push finished: %s\n", strings.Join(rsyncCmd, " "))
+			log.WithFields(log.Fields{
+				"command": strings.Join(rsyncCmd, " "),
+			}).Info("sync push finished")
 			return nil
 		})
 	}

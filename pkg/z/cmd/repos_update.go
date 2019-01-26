@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"context"
+	"os"
 
 	"github.com/cybozu-go/well"
 	"github.com/mitsutaka/zcmd"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -17,26 +19,33 @@ var reposUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update fetches and checkouts from remote master branch",
 	Long:  `update fetches and checkouts from remote master branch`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Run: func(cmd *cobra.Command, args []string) {
 		upd, err := zcmd.NewUpdater(cfg.Repos.Root)
 		if err != nil {
-			return err
+			log.Error(err)
+			os.Exit(1)
 		}
 
 		err = upd.FindRepositories()
 		if err != nil {
-			return err
+			log.Error(err)
+			os.Exit(1)
 		}
 
 		if reposUpdateOpts.dryRun {
-			return nil
+			os.Exit(0)
 		}
 
 		well.Go(func(ctx context.Context) error {
 			return upd.Update(ctx)
 		})
 		well.Stop()
-		return well.Wait()
+		err = well.Wait()
+		if err != nil {
+			log.Error(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
 	},
 }
 

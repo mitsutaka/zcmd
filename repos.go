@@ -75,47 +75,38 @@ func (u *Updater) Update(ctx context.Context) error {
 			err := fetch(ctx, ri.repo)
 			if err != nil && err != git.NoErrAlreadyUpToDate {
 				log.WithFields(log.Fields{
-					"command": "git fetch",
-					"path":    ri.path,
-					"error":   err,
-				}).Error("fetched")
+					"path":  ri.path,
+					"error": err,
+				}).Error("git fetch")
 				return err
 			}
 			log.WithFields(log.Fields{
-				"command": "git fetch",
-				"path":    ri.path,
-				"error":   err,
-			}).Info("fetched")
+				"path": ri.path,
+			}).Info("git fetch")
 
 			err = checkout(ri.repo)
 			if err != nil {
 				log.WithFields(log.Fields{
-					"command": "git checkout",
-					"path":    ri.path,
-					"error":   err,
-				}).Error("checked out")
+					"path":  ri.path,
+					"error": err,
+				}).Error("git checkout")
 				return err
 			}
 			log.WithFields(log.Fields{
-				"command": "git checkout",
-				"path":    ri.path,
-				"error":   err,
-			}).Info("checked out")
+				"path": ri.path,
+			}).Info("git checkout")
 
 			err = pull(ctx, ri.repo)
 			if err != nil && err != git.NoErrAlreadyUpToDate {
 				log.WithFields(log.Fields{
-					"command": "git pull",
-					"path":    ri.path,
-					"error":   err,
-				}).Error("pulled")
+					"path":  ri.path,
+					"error": err,
+				}).Error("git pull")
 				return err
 			}
 			log.WithFields(log.Fields{
-				"command": "git pull",
-				"path":    ri.path,
-				"error":   err,
-			}).Info("pulled")
+				"path": ri.path,
+			}).Info("git pull")
 
 			return nil
 		})

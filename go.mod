@@ -1,7 +1,6 @@
 module github.com/mitsutaka/zcmd
 
 require (
-	github.com/cybozu-go/log v1.5.0
 	github.com/cybozu-go/well v1.8.1
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.0.0

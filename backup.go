@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
+	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/cybozu-go/well"
 )
@@ -67,15 +69,24 @@ func (b *Backup) Do(ctx context.Context) error {
 	for _, rsyncCmd := range rsyncCmds {
 		rsyncCmd := rsyncCmd
 		env.Go(func(ctx context.Context) error {
-			log.Printf("backup started: %#v\n", rsyncCmd)
+			log.WithFields(log.Fields{
+				"command": strings.Join(rsyncCmd, " "),
+			}).Info("backup started")
+
 			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
+				log.WithFields(log.Fields{
+					"command": strings.Join(rsyncCmd, " "),
+					"error":   err,
+				}).Error("backup finished")
 				return err
 			}
-			log.Printf("backup finished: %#v\n", rsyncCmd)
+			log.WithFields(log.Fields{
+				"command": strings.Join(rsyncCmd, " "),
+			}).Info("backup finished")
 			return nil
 		})
 	}
