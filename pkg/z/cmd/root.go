@@ -17,8 +17,8 @@ var cfg *zcmd.Config
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "z",
-	Short: "mitZ's command utilities",
-	Long:  `Mitz's command line utilities.`,
+	Short: "mitZ's command line collections",
+	Long:  `mitZ's command line collections.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -59,12 +59,11 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		log.ErrorExit(err)
 	}
 
 	if err := viper.Unmarshal(&cfg); err != nil {
-		fmt.Printf("config file Unmarshal error: %v\n", err)
-		os.Exit(1)
+		log.ErrorExit(err)
 	}
 }
