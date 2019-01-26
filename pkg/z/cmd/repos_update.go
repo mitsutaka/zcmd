@@ -33,9 +33,11 @@ var reposUpdateCmd = &cobra.Command{
 		}
 
 		well.Go(func(ctx context.Context) error {
-			upd.FetchRepositories(ctx)
-			upd.CheckoutRepositories(ctx)
-			return nil
+			err := upd.FetchRepositories(ctx)
+			if err != nil {
+				return err
+			}
+			return upd.CheckoutRepositories(ctx)
 		})
 		well.Stop()
 		return well.Wait()

@@ -64,7 +64,7 @@ func (u *Updater) FindRepositories() error {
 }
 
 // FetchRepositories fetches git repositories
-func (u *Updater) FetchRepositories(ctx context.Context) {
+func (u *Updater) FetchRepositories(ctx context.Context) error {
 	env := well.NewEnvironment(ctx)
 	for _, r := range u.repositories {
 		ri := r
@@ -80,7 +80,7 @@ func (u *Updater) FetchRepositories(ctx context.Context) {
 		})
 	}
 	env.Stop()
-	_ = env.Wait()
+	return env.Wait()
 }
 
 func fetch(ctx context.Context, repo *git.Repository) error {
@@ -95,7 +95,7 @@ func fetch(ctx context.Context, repo *git.Repository) error {
 }
 
 // CheckoutRepositories checkouts latest commits
-func (u *Updater) CheckoutRepositories(ctx context.Context) {
+func (u *Updater) CheckoutRepositories(ctx context.Context) error {
 	env := well.NewEnvironment(ctx)
 	for _, r := range u.repositories {
 		ri := r
@@ -110,7 +110,7 @@ func (u *Updater) CheckoutRepositories(ctx context.Context) {
 		})
 	}
 	env.Stop()
-	_ = env.Wait()
+	return env.Wait()
 }
 
 func checkout(repo *git.Repository) error {
