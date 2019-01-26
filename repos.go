@@ -3,11 +3,11 @@ package zcmd
 import (
 	"context"
 	"errors"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/cybozu-go/well"
+	log "github.com/sirupsen/logrus"
 	git "gopkg.in/src-d/go-git.v4"
 )
 
@@ -53,7 +53,9 @@ func (u *Updater) FindRepositories() error {
 			return err
 		}
 
-		log.Printf("found %s", gitPath)
+		log.WithFields(log.Fields{
+			"path": gitPath,
+		}).Info("found git repository")
 		repoInfo := repoInfo{
 			path: gitPath,
 			repo: repo,
@@ -63,22 +65,62 @@ func (u *Updater) FindRepositories() error {
 	})
 }
 
-// FetchRepositories fetches git repositories
-func (u *Updater) FetchRepositories(ctx context.Context) error {
+// Update fetches, checkouts and pulls git repositories
+func (u *Updater) Update(ctx context.Context) error {
 	env := well.NewEnvironment(ctx)
+
 	for _, r := range u.repositories {
 		ri := r
 		env.Go(func(ctx context.Context) error {
 			err := fetch(ctx, ri.repo)
 			if err != nil && err != git.NoErrAlreadyUpToDate {
-				log.Printf("git fetch %s, error: %#v\n", ri.path, err)
+				log.WithFields(log.Fields{
+					"command": "git fetch",
+					"path":    ri.path,
+					"error":   err,
+				}).Error("fetched")
 				return err
 			}
+			log.WithFields(log.Fields{
+				"command": "git fetch",
+				"path":    ri.path,
+				"error":   err,
+			}).Info("fetched")
 
-			log.Printf("git fetched %s\n", ri.path)
+			err = checkout(ri.repo)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"command": "git checkout",
+					"path":    ri.path,
+					"error":   err,
+				}).Error("checked out")
+				return err
+			}
+			log.WithFields(log.Fields{
+				"command": "git checkout",
+				"path":    ri.path,
+				"error":   err,
+			}).Info("checked out")
+
+			err = pull(ctx, ri.repo)
+			if err != nil && err != git.NoErrAlreadyUpToDate {
+				log.WithFields(log.Fields{
+					"command": "git pull",
+					"path":    ri.path,
+					"error":   err,
+				}).Error("pulled")
+				return err
+			}
+			log.WithFields(log.Fields{
+				"command": "git pull",
+				"path":    ri.path,
+				"error":   err,
+			}).Info("pulled")
+
 			return nil
 		})
 	}
+
 	env.Stop()
 	return env.Wait()
 }
@@ -89,42 +131,26 @@ func fetch(ctx context.Context, repo *git.Repository) error {
 		return err
 	}
 
-	return remote.FetchContext(ctx, &git.FetchOptions{
-		Progress: os.Stdout,
-	})
-}
-
-// CheckoutRepositories checkouts latest commits
-func (u *Updater) CheckoutRepositories(ctx context.Context) error {
-	env := well.NewEnvironment(ctx)
-	for _, r := range u.repositories {
-		ri := r
-		env.Go(func(ctx context.Context) error {
-			err := checkout(ri.repo)
-			if err != nil {
-				log.Printf("git fetch %s, error: %#v\n", ri.path, err)
-				return err
-			}
-			log.Printf("git checked out %s\n", ri.path)
-			return nil
-		})
-	}
-	env.Stop()
-	return env.Wait()
+	return remote.FetchContext(ctx, &git.FetchOptions{})
 }
 
 func checkout(repo *git.Repository) error {
-	head, err := repo.Head()
-	if err != nil {
-		return err
-	}
-
 	worktree, err := repo.Worktree()
 	if err != nil {
 		return err
 	}
 
-	return worktree.Checkout(&git.CheckoutOptions{
-		Hash: head.Hash(),
+	// Checkout master branch
+	return worktree.Checkout(&git.CheckoutOptions{})
+}
+
+func pull(ctx context.Context, repo *git.Repository) error {
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
+
+	return worktree.PullContext(ctx, &git.PullOptions{
+		Progress: os.Stdout,
 	})
 }

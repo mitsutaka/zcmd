@@ -30,6 +30,8 @@ github.com/inconshreveable/mousetrap
 github.com/jbenet/go-context/io
 # github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e
 github.com/kevinburke/ssh_config
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
 # github.com/magiconair/properties v1.8.0
 github.com/magiconair/properties
 # github.com/mitchellh/go-homedir v1.0.0
@@ -44,6 +46,8 @@ github.com/pelletier/go-toml
 github.com/pkg/errors
 # github.com/sergi/go-diff v1.0.0
 github.com/sergi/go-diff/diffmatchpatch
+# github.com/sirupsen/logrus v1.3.0
+github.com/sirupsen/logrus
 # github.com/spf13/afero v1.1.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -64,7 +68,8 @@ github.com/src-d/gcfg/token
 github.com/src-d/gcfg/types
 # github.com/xanzy/ssh-agent v0.2.0
 github.com/xanzy/ssh-agent
-# golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
+# golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
+golang.org/x/crypto/ssh/terminal
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/openpgp/armor
 golang.org/x/crypto/openpgp/errors
@@ -84,9 +89,9 @@ golang.org/x/crypto/internal/subtle
 # golang.org/x/net v0.0.0-20180911220305-26e67e76b6c3
 golang.org/x/net/netutil
 golang.org/x/net/context
-# golang.org/x/sys v0.0.0-20181205085412-a5c9d58dba9a
-golang.org/x/sys/windows
+# golang.org/x/sys v0.0.0-20190124100055-b90733256f2e
 golang.org/x/sys/unix
+golang.org/x/sys/windows
 # golang.org/x/text v0.3.0
 golang.org/x/text/unicode/norm
 golang.org/x/text/transform
