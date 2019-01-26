@@ -8,11 +8,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//nolint[gochecknoglobals]
 var backupOpts struct {
 	dryRun bool
 }
 
 // backupCmd represents the backup command
+//nolint[gochecknoglobals]
 var backupCmd = &cobra.Command{
 	Use:   "backup",
 	Short: "backup local data to the remote server",
@@ -28,6 +30,7 @@ var backupCmd = &cobra.Command{
 	},
 }
 
+//nolint[gochecknoinits]
 func init() {
 	backupCmd.Flags().BoolVarP(&backupOpts.dryRun, "dry-run", "n", false, "dry run")
 	rootCmd.AddCommand(backupCmd)

@@ -12,6 +12,7 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 )
 
+//nolint[gochecknoglobals]
 var (
 	gitURLs = []string{
 		"https://github.com/mitsutaka/docker-libs.git",

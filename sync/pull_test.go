@@ -31,8 +31,10 @@ func TestPull(t *testing.T) {
 			},
 			args: []string{},
 			expected: map[string][]string{
-				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync", "-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
-				"bar": {"/usr/bin/sudo", "-E", "/usr/bin/rsync", "-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+					"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+				"bar": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+					"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
 			},
 		},
 		{
@@ -50,7 +52,8 @@ func TestPull(t *testing.T) {
 			},
 			args: []string{"foo"},
 			expected: map[string][]string{
-				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync", "-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+					"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
 			},
 		},
 		{
@@ -68,8 +71,10 @@ func TestPull(t *testing.T) {
 			},
 			args: []string{"foo", "bar"},
 			expected: map[string][]string{
-				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync", "-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
-				"bar": {"/usr/bin/sudo", "-E", "/usr/bin/rsync", "-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+					"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+				"bar": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+					"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
 			},
 		},
 	}

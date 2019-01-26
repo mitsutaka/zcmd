@@ -16,9 +16,8 @@ const (
 	OptDryRun = "--dry-run"
 )
 
+//nolint[gochecknoglobals]
 var (
-	// OptsRsync is default rsync options
-	OptsRsync = []string{"-avxRP", "--stats", "--delete"}
 	// sudoCmd is default sudo command
 	sudoCmd = []string{"/usr/bin/sudo", "-E"}
 )

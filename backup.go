@@ -18,8 +18,6 @@ const (
 	datePath      = "backup-0000-00-00-000000"
 )
 
-var optsRsync = []string{"-avxRP", "--stats", "--delete"}
-
 // Backup is client for backup
 type Backup struct {
 	destinations []string
@@ -73,7 +71,7 @@ func (b *Backup) Do(ctx context.Context) error {
 				"command": strings.Join(rsyncCmd, " "),
 			}).Info("backup started")
 
-			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
+			cmd := exec.CommandContext(ctx, rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
@@ -96,6 +94,8 @@ func (b *Backup) Do(ctx context.Context) error {
 
 // GenerateCmd generates rsync command
 func (b *Backup) GenerateCmd() (map[string][]string, error) {
+	var optsRsync = []string{"-avxRP", "--stats", "--delete"}
+
 	cmdRsync, err := GetRsyncCmd()
 	if err != nil {
 		return nil, err

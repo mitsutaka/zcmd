@@ -25,7 +25,7 @@ type repoInfo struct {
 // NewUpdater returns Updater with given root directory
 func NewUpdater(root string) (*Updater, error) {
 	if len(root) == 0 {
-		return nil, errors.New("Not root directory specified")
+		return nil, errors.New("no root directory specified")
 	}
 	return &Updater{
 		root: root,

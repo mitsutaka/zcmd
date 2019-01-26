@@ -65,7 +65,7 @@ func (p *Push) Do(ctx context.Context) error {
 				"command": strings.Join(rsyncCmd, " "),
 			}).Info("sync push started")
 
-			cmd := exec.Command(rsyncCmd[0], rsyncCmd[1:]...)
+			cmd := exec.CommandContext(ctx, rsyncCmd[0], rsyncCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
@@ -130,7 +130,7 @@ func (p *Push) GenerateCmd() (map[string][]string, error) {
 		}
 		// Add "/" to sync all files in the source URL directory
 		if !strings.HasSuffix(src, "/") {
-			src = src + "/"
+			src += "/"
 		}
 		cmd = append(cmd, src, dst)
 		cmds[sync.Name] = cmd
