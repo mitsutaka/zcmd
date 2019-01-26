@@ -8,7 +8,7 @@ import (
 var reposCmd = &cobra.Command{
 	Use:   "repos",
 	Short: "repos subcommand is operation for checked out git repositories.",
-	Long:  `repos subcommand is manuual operation for checked out local git repositories.`,
+	Long:  `repos subcommand is operation for checked out local git repositories.`,
 }
 
 func init() {
