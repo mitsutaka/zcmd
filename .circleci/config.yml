@@ -9,12 +9,5 @@ jobs:
     working_directory: /go/src/github.com/mitsutaka/zcmd
     steps:
       - checkout
-      - run:
-          name: Setup tools
-          command: |
-            GO111MODULE=off go get -v github.com/client9/misspell/cmd/misspell
-            curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s
-      - run: GO111MODULE=on go build -mod=vendor -v ./...
-      - run: GO111MODULE=on go test -mod=vendor -v ./...
-      - run: ./bin/golangci-lint run --presets bugs,unused,format,complexity,performance -D unparam --verbose
-      - run: misspell -error $(go list -mod=vendor ./... | grep -v /vendor/)
+      - run: make setup
+      - run: make test

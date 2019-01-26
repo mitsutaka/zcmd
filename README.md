@@ -1,4 +1,4 @@
-# zcmd: mitZ's CoMmanD utilities
+# zcmd: mitZ's CoMmanD line collections
 
 [![CircleCI](https://circleci.com/gh/mitsutaka/zcmd.svg?style=svg)](https://circleci.com/gh/mitsutaka/zcmd)
 [![GoDoc](https://godoc.org/github.com/mitsutaka/zcmd?status.svg)][godoc]
