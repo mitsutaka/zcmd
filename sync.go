@@ -1,4 +1,4 @@
-package sync
+package zcmd
 
 import (
 	"context"
@@ -9,20 +9,19 @@ import (
 	"strings"
 
 	"github.com/cybozu-go/well"
-	"github.com/mitsutaka/zcmd"
 	log "github.com/sirupsen/logrus"
 )
 
 // Sync is client for sync pull
 type Sync struct {
 	argSyncs     []string
-	cfgSyncs     []*zcmd.SyncInfo
+	cfgSyncs     []*SyncInfo
 	excludeFiles []string
 	dryRun       bool
 }
 
 // NewSync returns Syncer
-func NewSync(sync []*zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
+func NewSync(sync []*SyncInfo, argSyncs []string, dryRun bool) Rsync {
 	return &Sync{
 		argSyncs: argSyncs,
 		cfgSyncs: sync,
@@ -32,6 +31,8 @@ func NewSync(sync []*zcmd.SyncInfo, argSyncs []string, dryRun bool) zcmd.Rsync {
 
 // Do is main pulling process
 func (s *Sync) Do(ctx context.Context) error {
+	syncPidFile := "/tmp/sync.pid"
+
 	rsyncCmds, err := s.GenerateCmd()
 	if err != nil {
 		return err
@@ -88,7 +89,9 @@ func (s *Sync) Do(ctx context.Context) error {
 
 // GenerateCmd generates rsync command
 func (s *Sync) GenerateCmd() (map[string][]string, error) {
-	cmdRsync, err := zcmd.GetRsyncCmd()
+	var optsRsync = []string{"-avP", "--stats", "--delete", "--delete-excluded"}
+
+	cmdRsync, err := GetRsyncCmd()
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +124,7 @@ func (s *Sync) GenerateCmd() (map[string][]string, error) {
 		dst := sync.Destination
 		cmd = append(cmd, cmdRsync...)
 		if s.dryRun {
-			cmd = append(cmd, zcmd.OptDryRun)
+			cmd = append(cmd, OptDryRun)
 		}
 		if len(optExclude) != 0 {
 			cmd = append(cmd, optExclude)
@@ -137,13 +140,13 @@ func (s *Sync) GenerateCmd() (map[string][]string, error) {
 	return cmds, nil
 }
 
-func findTargetSyncs(cfgs []*zcmd.SyncInfo, args []string) []*zcmd.SyncInfo {
+func findTargetSyncs(cfgs []*SyncInfo, args []string) []*SyncInfo {
 	if len(args) == 0 {
 		// Sync all paths
 		return cfgs
 	}
 
-	targetCfgs := make([]*zcmd.SyncInfo, 0)
+	targetCfgs := make([]*SyncInfo, 0)
 
 	for _, cfg := range cfgs {
 		for _, arg := range args {

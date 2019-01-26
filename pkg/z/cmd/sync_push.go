@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/cybozu-go/well"
-	"github.com/mitsutaka/zcmd/sync"
+	"github.com/mitsutaka/zcmd"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -37,7 +37,7 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 		return nil
 	},
 	Run: func(_ *cobra.Command, args []string) {
-		sync := sync.NewSync(cfg.Sync.Push, args, syncPushCmdOpts.dryRun)
+		sync := zcmd.NewSync(cfg.Sync.Push, args, syncPushCmdOpts.dryRun)
 
 		well.Go(func(ctx context.Context) error {
 			return sync.Do(ctx)

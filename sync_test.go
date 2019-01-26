@@ -1,22 +1,20 @@
-package sync
+package zcmd
 
 import (
 	"reflect"
 	"testing"
-
-	"github.com/mitsutaka/zcmd"
 )
 
 func testFindTargetSyncs(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		cfgs     []*zcmd.SyncInfo
+		cfgs     []*SyncInfo
 		args     []string
-		expected []*zcmd.SyncInfo
+		expected []*SyncInfo
 	}{
 		{
-			cfgs: []*zcmd.SyncInfo{
+			cfgs: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -30,7 +28,7 @@ func testFindTargetSyncs(t *testing.T) {
 				},
 			},
 			args: []string{},
-			expected: []*zcmd.SyncInfo{
+			expected: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -45,7 +43,7 @@ func testFindTargetSyncs(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*zcmd.SyncInfo{
+			cfgs: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -59,7 +57,7 @@ func testFindTargetSyncs(t *testing.T) {
 				},
 			},
 			args: []string{"foo"},
-			expected: []*zcmd.SyncInfo{
+			expected: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -68,7 +66,7 @@ func testFindTargetSyncs(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*zcmd.SyncInfo{
+			cfgs: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -82,7 +80,7 @@ func testFindTargetSyncs(t *testing.T) {
 				},
 			},
 			args: []string{"foo", "bar"},
-			expected: []*zcmd.SyncInfo{
+			expected: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -110,13 +108,13 @@ func testGenerateCmd(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		cfgs     []*zcmd.SyncInfo
+		cfgs     []*SyncInfo
 		args     []string
 		dryRun   bool
 		expected map[string][]string
 	}{
 		{
-			cfgs: []*zcmd.SyncInfo{
+			cfgs: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -137,7 +135,7 @@ func testGenerateCmd(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*zcmd.SyncInfo{
+			cfgs: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -156,7 +154,7 @@ func testGenerateCmd(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*zcmd.SyncInfo{
+			cfgs: []*SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
