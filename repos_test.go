@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	git "gopkg.in/src-d/go-git.v4"
@@ -19,34 +20,39 @@ var (
 	}
 )
 
-func gitClone(dir string) error {
-	for _, gitURL := range gitURLs {
+func gitClone(dir string) ([]repoInfo, error) {
+	repoInfos := make([]repoInfo, len(gitURLs))
+
+	for i, gitURL := range gitURLs {
 		u, err := url.Parse(gitURL)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		_, err = git.PlainClone(filepath.Join(dir, u.Path), false, &git.CloneOptions{
+		gitPath := filepath.Join(dir, u.Path)
+		gitRepo, err := git.PlainClone(gitPath, false, &git.CloneOptions{
 			URL:      gitURL,
 			Progress: os.Stdout,
 		})
 		if err != nil {
-			return err
+			return nil, err
 		}
+		repoInfos[i].repo = gitRepo
+		repoInfos[i].path = gitPath
 	}
-	return nil
+	return repoInfos, nil
 }
 
-func testFetch(t *testing.T) {
+func testFind(t *testing.T) {
 	t.Parallel()
 
 	// Prepare test data
-	dir, err := ioutil.TempDir("", "fetch")
+	dir, err := ioutil.TempDir("", "find")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(dir)
 
-	err = gitClone(dir)
+	repoInfos, err := gitClone(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,9 +67,40 @@ func testFetch(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = upd.FetchRepositories(context.Background())
+	updPaths := make([]string, len(gitURLs))
+	for _, path := range upd.repositories {
+		updPaths = append(updPaths, path.path)
+	}
+	clonedPaths := make([]string, len(gitURLs))
+	for _, path := range repoInfos {
+		clonedPaths = append(clonedPaths, path.path)
+	}
+
+	if !reflect.DeepEqual(updPaths, clonedPaths) {
+		t.Errorf("%v != %v", updPaths, clonedPaths)
+	}
+}
+
+func testFetch(t *testing.T) {
+	t.Parallel()
+
+	// Prepare test data
+	dir, err := ioutil.TempDir("", "fetch")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	repoInfos, err := gitClone(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, repoInfo := range repoInfos {
+		err = fetch(context.Background(), repoInfo.repo)
+		if err != nil && err != git.NoErrAlreadyUpToDate {
+			t.Error(err)
+		}
 	}
 }
 
@@ -77,28 +114,45 @@ func testCheckout(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
-	err = gitClone(dir)
+	repoInfos, err := gitClone(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	upd, err := NewUpdater(dir)
+	for _, repoInfo := range repoInfos {
+		err = checkout(repoInfo.repo)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+}
+
+func testPull(t *testing.T) {
+	t.Parallel()
+
+	// Prepare test data
+	dir, err := ioutil.TempDir("", "pull")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	repoInfos, err := gitClone(dir)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	err = upd.FindRepositories()
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = upd.CheckoutRepositories(context.Background())
-	if err != nil {
-		t.Error(err)
+	for _, repoInfo := range repoInfos {
+		err = pull(context.Background(), repoInfo.repo)
+		if err != nil && err != git.NoErrAlreadyUpToDate {
+			t.Error(err)
+		}
 	}
 }
 
 func TestReposUpdate(t *testing.T) {
+	t.Run("find", testFind)
 	t.Run("fetch", testFetch)
 	t.Run("checkout", testCheckout)
+	t.Run("pull", testPull)
 }
