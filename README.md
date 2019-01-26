@@ -1,7 +1,7 @@
 # zcmd: mitZ's CoMmanD line collections
 
 [![CircleCI](https://circleci.com/gh/mitsutaka/zcmd.svg?style=svg)](https://circleci.com/gh/mitsutaka/zcmd)
-[![GoDoc](https://godoc.org/github.com/mitsutaka/zcmd?status.svg)][godoc]
+[![GoDoc](https://godoc.org/github.com/mitsutaka/zcmd?status.svg)](https://godoc.org/github.com/mitsutaka/zcmd)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mitsutaka/zcmd)](https://goreportcard.com/report/github.com/mitsutaka/zcmd)
 
 ## Installation
