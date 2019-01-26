@@ -37,7 +37,7 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 		return nil
 	},
 	Run: func(_ *cobra.Command, args []string) {
-		sync := sync.NewPull(cfg.Sync.Pull, args, syncPullCmdOpts.dryRun)
+		sync := sync.NewSync(cfg.Sync.Pull, args, syncPullCmdOpts.dryRun)
 
 		well.Go(func(ctx context.Context) error {
 			return sync.Do(ctx)
