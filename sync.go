@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/cybozu-go/well"
@@ -48,7 +49,7 @@ func (s *Sync) Do(ctx context.Context) error {
 			os.Remove(f)
 		}
 	}()
-	_, err = pid.WriteString(string(os.Getpid()))
+	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
 	if err != nil {
 		return err
 	}

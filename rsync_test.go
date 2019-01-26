@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// GetRsyncCmd returns rsync command and arguments for each platform
 func TestGetRsyncCmd(t *testing.T) {
 	t.Parallel()
 

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -54,7 +55,7 @@ func (b *Backup) Do(ctx context.Context) error {
 			os.Remove(b.excludeFile)
 		}
 	}()
-	_, err = pid.WriteString(string(os.Getpid()))
+	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
 	if err != nil {
 		return err
 	}
