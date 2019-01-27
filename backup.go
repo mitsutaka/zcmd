@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -24,7 +25,6 @@ type Backup struct {
 	destinations []string
 	includes     []string
 	excludes     []string
-	excludeFile  string
 	dryRun       bool
 }
 
@@ -40,7 +40,7 @@ func NewBackup(cfg *BackupConfig, dryRun bool) Rsync {
 
 // Do is main backup process
 func (b *Backup) Do(ctx context.Context) error {
-	rsyncCmds, err := b.GenerateCmd()
+	rcs, err := b.generateCmd()
 	if err != nil {
 		return err
 	}
@@ -49,12 +49,8 @@ func (b *Backup) Do(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		os.Remove(pid.Name())
-		if len(b.excludeFile) != 0 {
-			os.Remove(b.excludeFile)
-		}
-	}()
+	defer os.Remove(pid.Name())
+
 	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
 	if err != nil {
 		return err
@@ -65,26 +61,32 @@ func (b *Backup) Do(ctx context.Context) error {
 	}
 
 	env := well.NewEnvironment(ctx)
-	for _, rsyncCmd := range rsyncCmds {
-		rsyncCmd := rsyncCmd
+	for _, rc := range rcs {
+		rc := rc
 		env.Go(func(ctx context.Context) error {
+			defer func() {
+				if rc.excludeFile != nil {
+					os.Remove(rc.excludeFile.Name())
+				}
+			}()
+
 			log.WithFields(log.Fields{
-				"command": strings.Join(rsyncCmd, " "),
+				"command": strings.Join(rc.command, " "),
 			}).Info("backup started")
 
-			cmd := exec.CommandContext(ctx, rsyncCmd[0], rsyncCmd[1:]...)
+			cmd := exec.CommandContext(ctx, rc.command[0], rc.command[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
 				log.WithFields(log.Fields{
-					"command": strings.Join(rsyncCmd, " "),
+					"command": strings.Join(rc.command, " "),
 					"error":   err,
 				}).Error("backup finished")
 				return err
 			}
 			log.WithFields(log.Fields{
-				"command": strings.Join(rsyncCmd, " "),
+				"command": strings.Join(rc.command, " "),
 			}).Info("backup finished")
 			return nil
 		})
@@ -94,7 +96,7 @@ func (b *Backup) Do(ctx context.Context) error {
 }
 
 // GenerateCmd generates rsync command
-func (b *Backup) GenerateCmd() (map[string][]string, error) {
+func (b *Backup) generateCmd() ([]rsyncClient, error) {
 	var optsRsync = []string{"-avxRP", "--stats", "--delete"}
 
 	cmdRsync, err := GetRsyncCmd()
@@ -103,39 +105,46 @@ func (b *Backup) GenerateCmd() (map[string][]string, error) {
 	}
 	cmdRsync = append(cmdRsync, optsRsync...)
 
-	f, err := ioutil.TempFile("", "backup")
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	optExclude := ""
-	if b.excludes != nil {
-		for _, path := range b.excludes {
-			_, err := f.WriteString(path + "\n")
-			if err != nil {
-				return nil, err
-			}
-		}
-		optExclude = fmt.Sprintf("--exclude-from=%s", f.Name())
-		b.excludeFile = f.Name()
-	}
-
-	cmds := make(map[string][]string)
 	hostname, err := os.Hostname()
 	if err != nil {
 		return nil, err
 	}
+
+	i := 0
+	cmds := make([]rsyncClient, len(b.includes)*len(b.destinations))
 	for _, src := range b.includes {
 		for _, dst := range b.destinations {
+			var excludeFile *os.File
+			if len(b.excludes) != 0 {
+				excludeFile, err = ioutil.TempFile("", "backup")
+				if err != nil {
+					return nil, err
+				}
+				defer excludeFile.Close()
+
+				for _, path := range b.excludes {
+					_, err := excludeFile.WriteString(path + "\n")
+					if err != nil {
+						return nil, err
+					}
+				}
+			}
+
 			var cmd []string
-			dst := fmt.Sprintf("%s/%s/%s", dst, hostname, datePath)
+			dst := filepath.Join(dst, hostname, datePath)
 			cmd = append(cmd, cmdRsync...)
 			if b.dryRun {
 				cmd = append(cmd, OptDryRun)
 			}
-			cmd = append(cmd, optExclude, src, dst)
-			cmds[src] = cmd
+			if excludeFile != nil {
+				cmd = append(cmd, fmt.Sprintf("--exclude-from=%s", excludeFile.Name()))
+			}
+			cmd = append(cmd, src, dst)
+			cmds[i] = rsyncClient{
+				command:     cmd,
+				excludeFile: excludeFile,
+			}
+			i++
 		}
 	}
 

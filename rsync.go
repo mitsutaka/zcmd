@@ -22,13 +22,18 @@ var (
 	sudoCmd = []string{"/usr/bin/sudo", "-E"}
 )
 
+type rsyncClient struct {
+	command     []string
+	excludeFile *os.File
+}
+
 // Rsync is rsync interface
 type Rsync interface {
 	// Do runs rsync command
 	Do(ctx context.Context) error
 
-	// GenerateCmd returns generated rsync commands
-	GenerateCmd() (map[string][]string, error)
+	// generateCmd returns generated rsync commands
+	generateCmd() ([]rsyncClient, error)
 }
 
 // GetRsyncCmd returns rsync command and arguments for each platform

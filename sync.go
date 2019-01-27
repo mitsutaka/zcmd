@@ -13,12 +13,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const syncPidFile = "/tmp/sync.pid"
+
 // Sync is client for sync pull
 type Sync struct {
-	argSyncs     []string
-	cfgSyncs     []*SyncInfo
-	excludeFiles []string
-	dryRun       bool
+	argSyncs []string
+	cfgSyncs []*SyncInfo
+	dryRun   bool
 }
 
 // NewSync returns Syncer
@@ -32,9 +33,7 @@ func NewSync(sync []*SyncInfo, argSyncs []string, dryRun bool) Rsync {
 
 // Do is main pulling process
 func (s *Sync) Do(ctx context.Context) error {
-	syncPidFile := "/tmp/sync.pid"
-
-	rsyncCmds, err := s.GenerateCmd()
+	rcs, err := s.generateCmd()
 	if err != nil {
 		return err
 	}
@@ -43,12 +42,7 @@ func (s *Sync) Do(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		os.Remove(pid.Name())
-		for _, f := range s.excludeFiles {
-			os.Remove(f)
-		}
-	}()
+	defer os.Remove(pid.Name())
 	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
 	if err != nil {
 		return err
@@ -59,27 +53,33 @@ func (s *Sync) Do(ctx context.Context) error {
 	}
 
 	env := well.NewEnvironment(ctx)
-	for _, rsyncCmd := range rsyncCmds {
-		rsyncCmd := rsyncCmd
+	for _, rc := range rcs {
+		rc := rc
 
 		env.Go(func(ctx context.Context) error {
+			defer func() {
+				if rc.excludeFile != nil {
+					os.Remove(rc.excludeFile.Name())
+				}
+			}()
+
 			log.WithFields(log.Fields{
-				"command": strings.Join(rsyncCmd, " "),
+				"command": strings.Join(rc.command, " "),
 			}).Info("sync started")
 
-			cmd := exec.CommandContext(ctx, rsyncCmd[0], rsyncCmd[1:]...)
+			cmd := exec.CommandContext(ctx, rc.command[0], rc.command[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
 				log.WithFields(log.Fields{
-					"command": strings.Join(rsyncCmd, " "),
+					"command": strings.Join(rc.command, " "),
 					"error":   err,
 				}).Error("sync finished")
 				return err
 			}
 			log.WithFields(log.Fields{
-				"command": strings.Join(rsyncCmd, " "),
+				"command": strings.Join(rc.command, " "),
 			}).Info("sync finished")
 			return nil
 		})
@@ -89,7 +89,7 @@ func (s *Sync) Do(ctx context.Context) error {
 }
 
 // GenerateCmd generates rsync command
-func (s *Sync) GenerateCmd() (map[string][]string, error) {
+func (s *Sync) generateCmd() ([]rsyncClient, error) {
 	var optsRsync = []string{"-avP", "--stats", "--delete", "--delete-excluded"}
 
 	cmdRsync, err := GetRsyncCmd()
@@ -100,24 +100,22 @@ func (s *Sync) GenerateCmd() (map[string][]string, error) {
 
 	targetSyncs := findTargetSyncs(s.cfgSyncs, s.argSyncs)
 
-	cmds := make(map[string][]string)
-	for _, sync := range targetSyncs {
-		f, err := ioutil.TempFile("", sync.Name)
-		if err != nil {
-			return nil, err
-		}
-		defer f.Close()
-
-		optExclude := ""
+	cmds := make([]rsyncClient, len(targetSyncs))
+	for i, sync := range targetSyncs {
+		var excludeFile *os.File
 		if sync.Excludes != nil {
+			excludeFile, err = ioutil.TempFile("", sync.Name)
+			if err != nil {
+				return nil, err
+			}
+			defer excludeFile.Close()
+
 			for _, exclude := range sync.Excludes {
-				_, err := f.WriteString(fmt.Sprintf("*%s*\n", exclude))
+				_, err := excludeFile.WriteString(fmt.Sprintf("*%s*\n", exclude))
 				if err != nil {
 					return nil, err
 				}
 			}
-			optExclude = fmt.Sprintf("--exclude-from=%s", f.Name())
-			s.excludeFiles = append(s.excludeFiles, f.Name())
 		}
 
 		var cmd []string
@@ -127,15 +125,19 @@ func (s *Sync) GenerateCmd() (map[string][]string, error) {
 		if s.dryRun {
 			cmd = append(cmd, OptDryRun)
 		}
-		if len(optExclude) != 0 {
-			cmd = append(cmd, optExclude)
+		if excludeFile != nil {
+			cmd = append(cmd, fmt.Sprintf("--exclude-from=%s", excludeFile.Name()))
 		}
 		// Add "/" to sync all files in the source URL directory
 		if !strings.HasSuffix(src, "/") {
 			src += "/"
 		}
 		cmd = append(cmd, src, dst)
-		cmds[sync.Name] = cmd
+
+		cmds[i] = rsyncClient{
+			command:     cmd,
+			excludeFile: excludeFile,
+		}
 	}
 
 	return cmds, nil

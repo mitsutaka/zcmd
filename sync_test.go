@@ -111,7 +111,7 @@ func testGenerateCmd(t *testing.T) {
 		cfgs     []*SyncInfo
 		args     []string
 		dryRun   bool
-		expected map[string][]string
+		expected []rsyncClient
 	}{
 		{
 			cfgs: []*SyncInfo{
@@ -127,11 +127,17 @@ func testGenerateCmd(t *testing.T) {
 				},
 			},
 			args: []string{},
-			expected: map[string][]string{
-				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-					"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
-				"bar": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-					"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+			expected: []rsyncClient{
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+					excludeFile: nil,
+				},
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+					excludeFile: nil,
+				},
 			},
 		},
 		{
@@ -148,9 +154,12 @@ func testGenerateCmd(t *testing.T) {
 				},
 			},
 			args: []string{"foo"},
-			expected: map[string][]string{
-				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-					"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+			expected: []rsyncClient{
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+					excludeFile: nil,
+				},
 			},
 		},
 		{
@@ -167,23 +176,29 @@ func testGenerateCmd(t *testing.T) {
 				},
 			},
 			args: []string{"foo", "bar"},
-			expected: map[string][]string{
-				"foo": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-					"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
-				"bar": {"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-					"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+			expected: []rsyncClient{
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+					excludeFile: nil,
+				},
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+					excludeFile: nil,
+				},
 			},
 		},
 	}
 
 	for _, c := range cases {
 		sync := NewSync(c.cfgs, c.args, c.dryRun)
-		cmds, err := sync.GenerateCmd()
+		rcs, err := sync.generateCmd()
 		if err != nil {
 			t.Error(err)
 		}
-		if !reflect.DeepEqual(cmds, c.expected) {
-			t.Errorf("%#v != %#v", cmds, c.expected)
+		if !reflect.DeepEqual(rcs, c.expected) {
+			t.Errorf("%#v != %#v", rcs, c.expected)
 		}
 	}
 }
