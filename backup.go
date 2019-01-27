@@ -99,7 +99,7 @@ func (b *Backup) Do(ctx context.Context) error {
 func (b *Backup) generateCmd() ([]rsyncClient, error) {
 	var optsRsync = []string{"-avxRP", "--stats", "--delete"}
 
-	cmdRsync, err := GetRsyncCmd()
+	cmdRsync, err := getRsyncCmd()
 	if err != nil {
 		return nil, err
 	}

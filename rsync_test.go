@@ -20,7 +20,7 @@ func TestGetRsyncCmd(t *testing.T) {
 		t.Fatal("unknown platform")
 	}
 
-	cmdRsync, err := GetRsyncCmd()
+	cmdRsync, err := getRsyncCmd()
 	if err != nil {
 		t.Error(err)
 	}

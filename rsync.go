@@ -36,8 +36,8 @@ type Rsync interface {
 	generateCmd() ([]rsyncClient, error)
 }
 
-// GetRsyncCmd returns rsync command and arguments for each platform
-func GetRsyncCmd() ([]string, error) {
+// getRsyncCmd returns rsync command and arguments for each platform
+func getRsyncCmd() ([]string, error) {
 	var cmdPrefix []string
 	if os.Getuid() != 0 {
 		cmdPrefix = sudoCmd

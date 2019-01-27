@@ -92,7 +92,7 @@ func (s *Sync) Do(ctx context.Context) error {
 func (s *Sync) generateCmd() ([]rsyncClient, error) {
 	var optsRsync = []string{"-avP", "--stats", "--delete", "--delete-excluded"}
 
-	cmdRsync, err := GetRsyncCmd()
+	cmdRsync, err := getRsyncCmd()
 	if err != nil {
 		return nil, err
 	}
