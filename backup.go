@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"os/exec"
-	"path/filepath"
+	"path"
 	"strconv"
 	"strings"
 
@@ -131,7 +132,12 @@ func (b *Backup) generateCmd() ([]rsyncClient, error) {
 			}
 
 			var cmd []string
-			dst := filepath.Join(dst, hostname, datePath)
+			u, err := url.Parse(dst)
+			if err != nil {
+				return nil, err
+			}
+			u.Path = path.Join(u.Path, hostname, datePath)
+			dst = u.String()
 			cmd = append(cmd, cmdRsync...)
 			if b.dryRun {
 				cmd = append(cmd, OptDryRun)

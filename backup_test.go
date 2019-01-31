@@ -67,6 +67,20 @@ func TestBackup(t *testing.T) {
 				},
 			},
 		},
+		{
+			cfg: BackupConfig{
+				Destinations: []string{"rsync://localhost/backup"},
+				Includes:     []string{"/"},
+			},
+			dryRun: false,
+			expected: []rsyncClient{
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avxRP", "--stats", "--delete", "/", "rsync://localhost/backup/" + hostname + "/backup-0000-00-00-000000"},
+					excludeFile: nil,
+				},
+			},
+		},
 	}
 
 	for _, c := range cases {

@@ -189,6 +189,23 @@ func testGenerateCmd(t *testing.T) {
 				},
 			},
 		},
+		{
+			cfgs: []*SyncInfo{
+				{
+					Name:        "foo",
+					Source:      "rsync://localhost/foo",
+					Destination: "/tmp/foo",
+				},
+			},
+			args: []string{"foo"},
+			expected: []rsyncClient{
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "rsync://localhost/foo/", "/tmp/foo"},
+					excludeFile: nil,
+				},
+			},
+		},
 	}
 
 	for _, c := range cases {
