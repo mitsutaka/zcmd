@@ -2,9 +2,10 @@ package zcmd
 
 // Config zcmd config
 type Config struct {
-	Sync   SyncConfig   `yaml:"sync,omitempty"`
-	Backup BackupConfig `yaml:"backup,omitempty"`
-	Repos  ReposConfig  `yaml:"repos,omitempty"`
+	Sync     SyncConfig     `yaml:"sync,omitempty"`
+	Backup   BackupConfig   `yaml:"backup,omitempty"`
+	Repos    ReposConfig    `yaml:"repos,omitempty"`
+	Dotfiles DotfilesConfig `yaml:"dotfiles,omitempty"`
 }
 
 // SyncConfig is sync: config
@@ -31,6 +32,12 @@ type BackupConfig struct {
 // ReposConfig is repos: config
 type ReposConfig struct {
 	Root string `yaml:"root"`
+}
+
+// DotfilesConfig is dotfiles: config
+type DotfilesConfig struct {
+	Hosts []string `yaml:"hosts"`
+	Files []string `yaml:"files"`
 }
 
 // NewConfig returns new Config

@@ -109,8 +109,8 @@ dotfiles:
     - YOUR_HOSTNAME
   files:
     - bashrc
-    - vimrc
     - config/sway/config
+    - spacemacs
     - ssh
 ```
 
