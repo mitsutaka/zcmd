@@ -110,6 +110,24 @@ repos:
 				},
 			},
 		},
+		{
+			source: `
+dotfiles:
+  hosts:
+    - YOUR_HOSTNAME
+  files:
+    - bashrc
+    - config/sway/config
+    - spacemacs
+    - ssh
+`,
+			expected: Config{
+				Dotfiles: DotfilesConfig{
+					Hosts: []string{"YOUR_HOSTNAME"},
+					Files: []string{"bashrc", "config/sway/config", "spacemacs", "ssh"},
+				},
+			},
+		},
 	}
 
 	for _, c := range cases {
