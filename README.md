@@ -96,6 +96,24 @@ repos:
   root: /home/mitz/git/repos
 ```
 
+### `dotfiles` command
+
+dotfiles manager inspired by https://github.com/dotphiles/dotphiles
+
+- `z dotfiles init`: Initialize dotfiles in local.
+- `z dotfiles pull`: Download latest dotfiles and make symbolic links.
+
+```yaml
+dotfiles:
+  hosts:
+    - YOUR_HOSTNAME
+  files:
+    - bashrc
+    - vimrc
+    - config/sway/config
+    - ssh
+```
+
 ### Misc
 
 To load bash completion scripts, run:
