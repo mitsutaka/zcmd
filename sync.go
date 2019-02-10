@@ -18,12 +18,12 @@ const syncPidFile = "/tmp/sync.pid"
 // Sync is client for sync pull
 type Sync struct {
 	argSyncs []string
-	cfgSyncs []*SyncInfo
+	cfgSyncs []SyncInfo
 	dryRun   bool
 }
 
 // NewSync returns Syncer
-func NewSync(sync []*SyncInfo, argSyncs []string, dryRun bool) Rsync {
+func NewSync(sync []SyncInfo, argSyncs []string, dryRun bool) Rsync {
 	return &Sync{
 		argSyncs: argSyncs,
 		cfgSyncs: sync,
@@ -143,13 +143,13 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 	return cmds, nil
 }
 
-func findTargetSyncs(cfgs []*SyncInfo, args []string) []*SyncInfo {
+func findTargetSyncs(cfgs []SyncInfo, args []string) []SyncInfo {
 	if len(args) == 0 {
 		// Sync all paths
 		return cfgs
 	}
 
-	targetCfgs := make([]*SyncInfo, 0)
+	targetCfgs := make([]SyncInfo, 0)
 
 	for _, cfg := range cfgs {
 		for _, arg := range args {

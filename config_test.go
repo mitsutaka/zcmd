@@ -3,8 +3,6 @@ package zcmd
 import (
 	"reflect"
 	"testing"
-
-	yaml "gopkg.in/yaml.v2"
 )
 
 func TestConfig(t *testing.T) {
@@ -12,7 +10,7 @@ func TestConfig(t *testing.T) {
 
 	cases := []struct {
 		source   string
-		expected Config
+		expected *Config
 	}{
 		{
 			source: `
@@ -28,9 +26,9 @@ sync:
         - aaa
         - bbb
 `,
-			expected: Config{
+			expected: &Config{
 				Sync: SyncConfig{
-					Pull: []*SyncInfo{
+					Pull: []SyncInfo{
 						{
 							Name:        "foo",
 							Source:      "/foo",
@@ -60,9 +58,9 @@ sync:
         - aaa
         - bbb
 `,
-			expected: Config{
+			expected: &Config{
 				Sync: SyncConfig{
-					Push: []*SyncInfo{
+					Push: []SyncInfo{
 						{
 							Name:        "foo",
 							Source:      "/foo",
@@ -91,7 +89,7 @@ backup:
     - foo
     - bar
 `,
-			expected: Config{
+			expected: &Config{
 				Backup: BackupConfig{
 					Destinations: []string{"/backup"},
 					Includes:     []string{"/", "/boot", "/home"},
@@ -104,7 +102,7 @@ backup:
 repos:
   root: /repos
 `,
-			expected: Config{
+			expected: &Config{
 				Repos: ReposConfig{
 					Root: "/repos",
 				},
@@ -121,22 +119,98 @@ dotfiles:
     - spacemacs
     - ssh
 `,
-			expected: Config{
+			expected: &Config{
 				Dotfiles: DotfilesConfig{
 					Hosts: []string{"YOUR_HOSTNAME"},
 					Files: []string{"bashrc", "config/sway/config", "spacemacs", "ssh"},
 				},
 			},
 		},
+		{
+			source: `
+proxy:
+  - name: testforward1
+    user: ubuntu
+    address: remotehost1
+    privateKey: ~/.ssh/id_rsa
+    forward:
+      # Local forwarding
+      - type: local
+        # default bindAddress is *
+        bindAddress: localhost
+        bindPort: 13128
+        remoteAddress: localhost
+        remotePort: 3128
+      # Dynamic forwarding for SOCK4, 5
+      - type: dynamic
+        bindAddress: localhost
+        bindPort: 1080
+  - name: testforward2
+    user: admin
+    address: remotehost2
+    privateKey: ~/.ssh/id_ecdsa
+    port: 10000
+    forward:
+      # Remote forwarding
+      - type: remote
+        bindAddress: localhost
+        bindPort: 9000
+        remoteAddress: localhost
+        remotePort: 3000
+`,
+			expected: &Config{
+				Proxy: []ProxyConfig{
+					{
+						Name:       "testforward1",
+						User:       "ubuntu",
+						Address:    "remotehost1",
+						PrivateKey: "~/.ssh/id_rsa",
+						Port:       DefaultProxyPort,
+						Forward: []ProxyForwardConfig{
+							{
+								Type:          LocalForward,
+								BindAddress:   "localhost",
+								BindPort:      13128,
+								RemoteAddress: "localhost",
+								RemotePort:    3128,
+							},
+							{
+								Type:          DynamicForward,
+								BindAddress:   "localhost",
+								BindPort:      1080,
+								RemoteAddress: "",
+								RemotePort:    0,
+							},
+						},
+					},
+					{
+						Name:       "testforward2",
+						User:       "admin",
+						Address:    "remotehost2",
+						PrivateKey: "~/.ssh/id_ecdsa",
+						Port:       10000,
+						Forward: []ProxyForwardConfig{
+							{
+								Type:          RemoteForward,
+								BindAddress:   "localhost",
+								BindPort:      9000,
+								RemoteAddress: "localhost",
+								RemotePort:    3000,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, c := range cases {
-		cfg := NewConfig()
-		err := yaml.Unmarshal([]byte(c.source), &cfg)
+		cfg, err := NewConfig(c.source)
 		if err != nil {
 			t.Error(err)
-		} else if !reflect.DeepEqual(*cfg, c.expected) {
-			t.Errorf("%#v != %#v", *cfg, c.expected)
+		}
+		if !reflect.DeepEqual(cfg, c.expected) {
+			t.Errorf("%#v != %#v", cfg, c.expected)
 		}
 	}
 }

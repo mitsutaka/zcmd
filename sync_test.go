@@ -9,12 +9,12 @@ func testFindTargetSyncs(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		cfgs     []*SyncInfo
+		cfgs     []SyncInfo
 		args     []string
-		expected []*SyncInfo
+		expected []SyncInfo
 	}{
 		{
-			cfgs: []*SyncInfo{
+			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -28,7 +28,7 @@ func testFindTargetSyncs(t *testing.T) {
 				},
 			},
 			args: []string{},
-			expected: []*SyncInfo{
+			expected: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -43,7 +43,7 @@ func testFindTargetSyncs(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*SyncInfo{
+			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -57,7 +57,7 @@ func testFindTargetSyncs(t *testing.T) {
 				},
 			},
 			args: []string{"foo"},
-			expected: []*SyncInfo{
+			expected: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -66,7 +66,7 @@ func testFindTargetSyncs(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*SyncInfo{
+			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -80,7 +80,7 @@ func testFindTargetSyncs(t *testing.T) {
 				},
 			},
 			args: []string{"foo", "bar"},
-			expected: []*SyncInfo{
+			expected: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -108,13 +108,13 @@ func testGenerateCmd(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		cfgs     []*SyncInfo
+		cfgs     []SyncInfo
 		args     []string
 		dryRun   bool
 		expected []rsyncClient
 	}{
 		{
-			cfgs: []*SyncInfo{
+			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -141,7 +141,7 @@ func testGenerateCmd(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*SyncInfo{
+			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -163,7 +163,7 @@ func testGenerateCmd(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*SyncInfo{
+			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "/foo",
@@ -190,7 +190,7 @@ func testGenerateCmd(t *testing.T) {
 			},
 		},
 		{
-			cfgs: []*SyncInfo{
+			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
 					Source:      "rsync://localhost/foo",

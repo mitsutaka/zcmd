@@ -114,6 +114,44 @@ dotfiles:
     - ssh
 ```
 
+### `proxy` command
+
+Make multiple ssh port forward at once.
+
+- `z proxy`: Setup ssh port forward.
+
+```yaml
+proxy:
+  - name: testforward1
+    user: ubuntu
+    address: remotehost1
+    privateKey: ~/.ssh/id_rsa
+    forward:
+      # Local forwarding
+      - type: local
+        # default bindAddress is *
+        bindAddress: localhost
+        bindPort: 13128
+        remoteAddress: localhost
+        remotePort: 3128
+      # Dynamic forwarding for SOCK4, 5
+      - type: dynamic
+        bindAddress: localhost
+        bindPort: 1080
+  - name: testforward2
+    user: admin
+    address: remotehost2
+    privateKey: ~/.ssh/id_ecdsa
+    port: 10000
+    forward:
+      # Remote forwarding
+      - type: remote
+        bindAddress: localhost
+        bindPort: 9000
+        remoteAddress: localhost
+        remotePort: 3000
+```
+
 ### Misc
 
 To load bash completion scripts, run:
