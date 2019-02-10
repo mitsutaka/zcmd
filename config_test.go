@@ -42,6 +42,9 @@ sync:
 						},
 					},
 				},
+				DotFiles: DotFilesConfig{
+					Dir: DefaultDotFilesDir,
+				},
 			},
 		},
 		{
@@ -74,6 +77,9 @@ sync:
 						},
 					},
 				},
+				DotFiles: DotFilesConfig{
+					Dir: DefaultDotFilesDir,
+				},
 			},
 		},
 		{
@@ -95,6 +101,9 @@ backup:
 					Includes:     []string{"/", "/boot", "/home"},
 					Excludes:     []string{"foo", "bar"},
 				},
+				DotFiles: DotFilesConfig{
+					Dir: DefaultDotFilesDir,
+				},
 			},
 		},
 		{
@@ -105,6 +114,29 @@ repos:
 			expected: &Config{
 				Repos: ReposConfig{
 					Root: "/repos",
+				},
+				DotFiles: DotFilesConfig{
+					Dir: DefaultDotFilesDir,
+				},
+			},
+		},
+		{
+			source: `
+dotfiles:
+  dir: /home/mitz/.dotfiles
+  hosts:
+    - YOUR_HOSTNAME
+  files:
+    - bashrc
+    - config/sway/config
+    - spacemacs
+    - ssh
+`,
+			expected: &Config{
+				DotFiles: DotFilesConfig{
+					Dir:   "/home/mitz/.dotfiles",
+					Hosts: []string{"YOUR_HOSTNAME"},
+					Files: []string{"bashrc", "config/sway/config", "spacemacs", "ssh"},
 				},
 			},
 		},
@@ -120,7 +152,8 @@ dotfiles:
     - ssh
 `,
 			expected: &Config{
-				Dotfiles: DotfilesConfig{
+				DotFiles: DotFilesConfig{
+					Dir:   DefaultDotFilesDir,
 					Hosts: []string{"YOUR_HOSTNAME"},
 					Files: []string{"bashrc", "config/sway/config", "spacemacs", "ssh"},
 				},
@@ -199,6 +232,9 @@ proxy:
 							},
 						},
 					},
+				},
+				DotFiles: DotFilesConfig{
+					Dir: DefaultDotFilesDir,
 				},
 			},
 		},

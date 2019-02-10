@@ -105,6 +105,8 @@ dotfiles manager inspired by https://github.com/dotphiles/dotphiles
 
 ```yaml
 dotfiles:
+  # default is $HOME/.zdotfiles
+  dir: /home/mitz/.zdotfiles
   hosts:
     - YOUR_HOSTNAME
   files:

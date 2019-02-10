@@ -1,6 +1,9 @@
 package zcmd
 
 import (
+	"os"
+	"path/filepath"
+
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -9,7 +12,7 @@ type Config struct {
 	Sync     SyncConfig     `yaml:"sync,omitempty"`
 	Backup   BackupConfig   `yaml:"backup,omitempty"`
 	Repos    ReposConfig    `yaml:"repos,omitempty"`
-	Dotfiles DotfilesConfig `yaml:"dotfiles,omitempty"`
+	DotFiles DotFilesConfig `yaml:"dotfiles,omitempty"`
 	Proxy    []ProxyConfig  `yaml:"proxy,omitempty"`
 }
 
@@ -39,8 +42,14 @@ type ReposConfig struct {
 	Root string `yaml:"root"`
 }
 
-// DotfilesConfig is dotfiles: config
-type DotfilesConfig struct {
+var (
+	// DefaultDotFilesDir is default dotfiles directory path
+	DefaultDotFilesDir = filepath.Join(os.Getenv("HOME"), ".zdotfiles")
+)
+
+// DotFilesConfig is dotfiles: config
+type DotFilesConfig struct {
+	Dir   string   `yaml:"dir,omitempty"`
 	Hosts []string `yaml:"hosts"`
 	Files []string `yaml:"files"`
 }
@@ -91,6 +100,9 @@ func NewConfig(source string) (*Config, error) {
 
 // SetDefaultConfigValues set default values if omitted
 func SetDefaultConfigValues(cfg *Config) {
+	if len(cfg.DotFiles.Dir) == 0 {
+		cfg.DotFiles.Dir = DefaultDotFilesDir
+	}
 	for i := range cfg.Proxy {
 		if cfg.Proxy[i].Port == 0 {
 			cfg.Proxy[i].Port = DefaultProxyPort
