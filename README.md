@@ -100,7 +100,7 @@ repos:
 
 dotfiles manager inspired by https://github.com/dotphiles/dotphiles
 
-- `z dotfiles init`: Initialize dotfiles in local.
+- `z dotfiles init GITURL`: Initialize dotfiles in local.
 - `z dotfiles pull`: Download latest dotfiles and make symbolic links.
 
 ```yaml

@@ -21,6 +21,7 @@ var backupCmd = &cobra.Command{
 	Use:   "backup",
 	Short: "backup local data to the remote server",
 	Long:  `backup starts backup process local data to the remote server`,
+	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		bk := zcmd.NewBackup(&cfg.Backup, backupOpts.dryRun)
 
