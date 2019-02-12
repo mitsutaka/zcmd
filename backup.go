@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
-	"os/exec"
 	"path"
 	"strconv"
 	"strings"
@@ -75,7 +74,7 @@ func (b *Backup) Do(ctx context.Context) error {
 				"command": strings.Join(rc.command, " "),
 			}).Info("backup started")
 
-			cmd := exec.CommandContext(ctx, rc.command[0], rc.command[1:]...)
+			cmd := well.CommandContext(ctx, rc.command[0], rc.command[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
