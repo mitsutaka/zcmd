@@ -75,6 +75,7 @@ func (b *Backup) Do(ctx context.Context) error {
 			}).Info("backup started")
 
 			cmd := well.CommandContext(ctx, rc.command[0], rc.command[1:]...)
+
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
