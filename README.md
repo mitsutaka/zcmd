@@ -82,11 +82,9 @@ backup:
     - /var/cache
 ```
 
-### `repos` command
+### `repos-update` command
 
-Operation command for checked out git repositories.
-
-- `z repos update`: Fetch and Checkout git repositories in parallel.
+Run `git clean`, `git checkout master` and `git pull` for checked out git repositories.
 
 Configuration example `$HOME/.z.yaml`:
 
