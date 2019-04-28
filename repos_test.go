@@ -9,38 +9,41 @@ import (
 	"reflect"
 	"testing"
 
-	git "gopkg.in/src-d/go-git.v4"
+	"github.com/cybozu-go/well"
 )
 
 //nolint[gochecknoglobals]
 var (
 	gitURLs = []string{
-		"https://github.com/mitsutaka/docker-libs.git",
-		"https://github.com/mitsutaka/kubernetes-coreos.git",
-		"https://github.com/mitsutaka/submissions.git",
+		"https://github.com/mitsutaka/docker-libs",
+		"https://github.com/mitsutaka/kubernetes-coreos",
+		"https://github.com/mitsutaka/submissions",
 	}
 )
 
-func gitClone(dir string) ([]repoInfo, error) {
-	repoInfos := make([]repoInfo, len(gitURLs))
+func gitClone(dir string) ([]string, error) {
+	repos := make([]string, len(gitURLs))
 
 	for i, gitURL := range gitURLs {
 		u, err := url.Parse(gitURL)
 		if err != nil {
 			return nil, err
 		}
-		gitPath := filepath.Join(dir, u.Path)
-		gitRepo, err := git.PlainClone(gitPath, false, &git.CloneOptions{
-			URL:      gitURL,
-			Progress: os.Stdout,
-		})
+		gitPath := filepath.Join(dir, filepath.Base(u.Path))
+
+		args := []string{"clone", gitURL}
+		cmd := well.CommandContext(context.Background(), cmdGit, args...)
+		cmd.Dir = dir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
 		if err != nil {
 			return nil, err
 		}
-		repoInfos[i].repo = gitRepo
-		repoInfos[i].path = gitPath
+
+		repos[i] = gitPath
 	}
-	return repoInfos, nil
+	return repos, nil
 }
 
 func testFind(t *testing.T) {
@@ -53,7 +56,7 @@ func testFind(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
-	repoInfos, err := gitClone(dir)
+	repos, err := gitClone(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,20 +72,20 @@ func testFind(t *testing.T) {
 	}
 
 	updPaths := make([]string, len(gitURLs))
-	for _, path := range upd.repositories {
-		updPaths = append(updPaths, path.path)
+	for i, path := range upd.repositories {
+		updPaths[i] = path
 	}
 	clonedPaths := make([]string, len(gitURLs))
-	for _, path := range repoInfos {
-		clonedPaths = append(clonedPaths, path.path)
+	for i, path := range repos {
+		clonedPaths[i] = path
 	}
 
 	if !reflect.DeepEqual(updPaths, clonedPaths) {
-		t.Errorf("%v != %v", updPaths, clonedPaths)
+		t.Errorf("%#v != %#v", updPaths, clonedPaths)
 	}
 }
 
-func testFetch(t *testing.T) {
+func testClean(t *testing.T) {
 	t.Parallel()
 
 	// Prepare test data
@@ -92,14 +95,14 @@ func testFetch(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
-	repoInfos, err := gitClone(dir)
+	repos, err := gitClone(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for _, repoInfo := range repoInfos {
-		err = fetch(context.Background(), repoInfo.repo)
-		if err != nil && err != git.NoErrAlreadyUpToDate {
+	for _, repo := range repos {
+		err = clean(context.Background(), repo)
+		if err != nil {
 			t.Error(err)
 		}
 	}
@@ -115,13 +118,13 @@ func testCheckout(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
-	repoInfos, err := gitClone(dir)
+	repos, err := gitClone(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for _, repoInfo := range repoInfos {
-		err = checkout(repoInfo.repo)
+	for _, repo := range repos {
+		err = checkoutMaster(context.Background(), repo)
 		if err != nil {
 			t.Error(err)
 		}
@@ -138,14 +141,14 @@ func testPull(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
-	repoInfos, err := gitClone(dir)
+	repos, err := gitClone(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for _, repoInfo := range repoInfos {
-		err = pull(context.Background(), repoInfo.repo)
-		if err != nil && err != git.NoErrAlreadyUpToDate {
+	for _, repo := range repos {
+		err = pull(context.Background(), repo)
+		if err != nil {
 			t.Error(err)
 		}
 	}
@@ -153,7 +156,7 @@ func testPull(t *testing.T) {
 
 func TestReposUpdate(t *testing.T) {
 	t.Run("find", testFind)
-	t.Run("fetch", testFetch)
+	t.Run("clean", testClean)
 	t.Run("checkout", testCheckout)
 	t.Run("pull", testPull)
 }

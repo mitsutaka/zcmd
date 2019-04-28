@@ -8,18 +8,16 @@ import (
 
 	"github.com/cybozu-go/well"
 	log "github.com/sirupsen/logrus"
-	git "gopkg.in/src-d/go-git.v4"
+)
+
+const (
+	cmdGit = "/usr/bin/git"
 )
 
 // Updater is client for repos update
 type Updater struct {
 	root         string
-	repositories []repoInfo
-}
-
-type repoInfo struct {
-	path string
-	repo *git.Repository
+	repositories []string
 }
 
 // NewUpdater returns Updater with given root directory
@@ -47,20 +45,10 @@ func (u *Updater) FindRepositories() error {
 		}
 		gitPath := filepath.Dir(path)
 
-		repo, err := git.PlainOpen(gitPath)
-		if err != nil {
-			// Skip
-			return err
-		}
-
 		log.WithFields(log.Fields{
 			"path": gitPath,
 		}).Info("found git repository")
-		repoInfo := repoInfo{
-			path: gitPath,
-			repo: repo,
-		}
-		u.repositories = append(u.repositories, repoInfo)
+		u.repositories = append(u.repositories, gitPath)
 		return nil
 	})
 }
@@ -72,41 +60,53 @@ func (u *Updater) Update(ctx context.Context) error {
 	for _, r := range u.repositories {
 		ri := r
 		env.Go(func(ctx context.Context) error {
-			err := fetch(ctx, ri.repo)
-			if err != nil && err != git.NoErrAlreadyUpToDate {
-				log.WithFields(log.Fields{
-					"path":  ri.path,
-					"error": err,
-				}).Error("git fetch")
-				return err
-			}
-			log.WithFields(log.Fields{
-				"path": ri.path,
-			}).Info("git fetch")
-
-			err = checkout(ri.repo)
+			err := clean(ctx, ri)
 			if err != nil {
 				log.WithFields(log.Fields{
-					"path":  ri.path,
+					"path":  ri,
 					"error": err,
-				}).Error("git checkout")
+				}).Error("git clean")
 				return err
 			}
 			log.WithFields(log.Fields{
-				"path": ri.path,
-			}).Info("git checkout")
+				"path": ri,
+			}).Info("git clean")
 
-			err = pull(ctx, ri.repo)
-			if err != nil && err != git.NoErrAlreadyUpToDate {
+			err = checkoutMaster(ctx, ri)
+			if err != nil {
 				log.WithFields(log.Fields{
-					"path":  ri.path,
+					"path":  ri,
+					"error": err,
+				}).Error("git checkout master")
+				return err
+			}
+			log.WithFields(log.Fields{
+				"path": ri,
+			}).Info("git checkout master")
+
+			err = pull(ctx, ri)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"path":  ri,
 					"error": err,
 				}).Error("git pull")
 				return err
 			}
 			log.WithFields(log.Fields{
-				"path": ri.path,
+				"path": ri,
 			}).Info("git pull")
+
+			err = status(ctx, ri)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"path":  ri,
+					"error": err,
+				}).Error("git status")
+				return err
+			}
+			log.WithFields(log.Fields{
+				"path": ri,
+			}).Info("git status")
 
 			return nil
 		})
@@ -116,32 +116,38 @@ func (u *Updater) Update(ctx context.Context) error {
 	return env.Wait()
 }
 
-func fetch(ctx context.Context, repo *git.Repository) error {
-	remote, err := repo.Remote("origin")
-	if err != nil {
-		return err
-	}
-
-	return remote.FetchContext(ctx, &git.FetchOptions{})
+func clean(ctx context.Context, path string) error {
+	args := []string{"clean", "-xdf"}
+	cmd := well.CommandContext(ctx, cmdGit, args...)
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
-func checkout(repo *git.Repository) error {
-	worktree, err := repo.Worktree()
-	if err != nil {
-		return err
-	}
-
-	// Checkout master branch
-	return worktree.Checkout(&git.CheckoutOptions{})
+func checkoutMaster(ctx context.Context, path string) error {
+	args := []string{"checkout", "master"}
+	cmd := well.CommandContext(ctx, cmdGit, args...)
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
-func pull(ctx context.Context, repo *git.Repository) error {
-	worktree, err := repo.Worktree()
-	if err != nil {
-		return err
-	}
+func pull(ctx context.Context, path string) error {
+	args := []string{"pull"}
+	cmd := well.CommandContext(ctx, cmdGit, args...)
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
 
-	return worktree.PullContext(ctx, &git.PullOptions{
-		Progress: os.Stdout,
-	})
+func status(ctx context.Context, path string) error {
+	args := []string{"status"}
+	cmd := well.CommandContext(ctx, cmdGit, args...)
+	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

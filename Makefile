@@ -12,7 +12,8 @@ setup:
 	GO111MODULE=off go get -v -u github.com/client9/misspell/cmd/misspell
 	GO111MODULE=off go get -v -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
-tidy:
+mod:
 	go mod tidy
 	go mod vendor
 	git add -f vendor
+	git add go.mod
