@@ -18,9 +18,9 @@ var reposUpdateOpts struct {
 // reposUpdateCmd represents the repos update command
 //nolint[gochecknoglobals]
 var reposUpdateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "update fetches and checkouts from remote master branch",
-	Long:  `update fetches and checkouts from remote master branch`,
+	Use:   "repos-update",
+	Short: "git clean, checkout and pull",
+	Long:  `git clean, checkout and pull`,
 	Args:  cobra.ExactArgs(0),
 	Run: func(_ *cobra.Command, args []string) {
 		upd, err := zcmd.NewUpdater(cfg.Repos.Root)
@@ -55,5 +55,5 @@ var reposUpdateCmd = &cobra.Command{
 //nolint[gochecknoinits]
 func init() {
 	reposUpdateCmd.Flags().BoolVarP(&reposUpdateOpts.dryRun, "dry-run", "n", false, "only show git repositories")
-	reposCmd.AddCommand(reposUpdateCmd)
+	rootCmd.AddCommand(reposUpdateCmd)
 }
