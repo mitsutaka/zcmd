@@ -72,13 +72,9 @@ func testFind(t *testing.T) {
 	}
 
 	updPaths := make([]string, len(gitURLs))
-	for i, path := range upd.repositories {
-		updPaths[i] = path
-	}
+	copy(updPaths, upd.repositories)
 	clonedPaths := make([]string, len(gitURLs))
-	for i, path := range repos {
-		clonedPaths[i] = path
-	}
+	copy(clonedPaths, repos)
 
 	if !reflect.DeepEqual(updPaths, clonedPaths) {
 		t.Errorf("%#v != %#v", updPaths, clonedPaths)
