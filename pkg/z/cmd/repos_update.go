@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"os"
+	"runtime"
 
 	"github.com/cybozu-go/well"
 	"github.com/mitsutaka/zcmd"
@@ -13,6 +14,7 @@ import (
 //nolint[gochecknoglobals]
 var reposUpdateOpts struct {
 	dryRun bool
+	job    int
 }
 
 // reposUpdateCmd represents the repos update command
@@ -40,7 +42,7 @@ var reposUpdateCmd = &cobra.Command{
 		}
 
 		well.Go(func(ctx context.Context) error {
-			return upd.Update(ctx)
+			return upd.Update(ctx, reposUpdateOpts.job)
 		})
 		well.Stop()
 		err = well.Wait()
@@ -55,5 +57,6 @@ var reposUpdateCmd = &cobra.Command{
 //nolint[gochecknoinits]
 func init() {
 	reposUpdateCmd.Flags().BoolVarP(&reposUpdateOpts.dryRun, "dry-run", "n", false, "only show git repositories")
+	reposUpdateCmd.Flags().IntVarP(&reposUpdateOpts.job, "job", "j", runtime.NumCPU(), "number of jobs")
 	rootCmd.AddCommand(reposUpdateCmd)
 }

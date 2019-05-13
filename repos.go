@@ -54,12 +54,19 @@ func (u *Updater) FindRepositories() error {
 }
 
 // Update fetches, checkouts and pulls git repositories
-func (u *Updater) Update(ctx context.Context) error {
+func (u *Updater) Update(ctx context.Context, jobs int) error {
+	jobChan := make(chan struct{}, jobs)
+	for i := 0; i < jobs; i++ {
+		jobChan <- struct{}{}
+	}
 	env := well.NewEnvironment(ctx)
 
 	for _, r := range u.repositories {
 		ri := r
 		env.Go(func(ctx context.Context) error {
+			<-jobChan
+			defer func() { jobChan <- struct{}{} }()
+
 			err := clean(ctx, ri)
 			if err != nil {
 				log.WithFields(log.Fields{
