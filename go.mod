@@ -8,6 +8,7 @@ require (
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
 	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8
 	golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
 	golang.org/x/sys v0.0.0-20190124100055-b90733256f2e // indirect
 	gopkg.in/src-d/go-git.v4 v4.8.1

@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net"
+	"time"
 
 	"github.com/cybozu-go/well"
 	log "github.com/sirupsen/logrus"
@@ -53,10 +54,19 @@ func NewProxy(cfgs []ProxyConfig) (*Proxy, error) {
 
 func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 	buff, err := ioutil.ReadFile(keyPath)
-	if err != nil {
+	if err != err {
 		return nil, err
 	}
-	return ssh.ParsePrivateKey(buff)
+	signer, err := ssh.ParsePrivateKey(buff)
+	if err != nil {
+		var passphrase string
+		err := Ask(&passphrase, "ssh passphrase for "+keyPath, true)
+		if err != nil {
+			return nil, err
+		}
+		return ssh.ParsePrivateKeyWithPassphrase(buff, []byte(passphrase))
+	}
+	return signer, nil
 }
 
 func makeSshConfig(cfg sshClientConfig) (*ssh.ClientConfig, error) {
@@ -65,6 +75,8 @@ func makeSshConfig(cfg sshClientConfig) (*ssh.ClientConfig, error) {
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(cfg.key),
 		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         10 * time.Second,
 	}, nil
 }
 
@@ -92,12 +104,15 @@ func handleClient(client net.Conn, remote net.Conn) {
 }
 
 func (p *Proxy) Run(ctx context.Context) error {
+	env := well.NewEnvironment(ctx)
 	for _, cfg := range p.sshCfg {
 		sshCfg, err := makeSshConfig(*cfg)
 		if err != nil {
 			return err
 		}
 
+		fmt.Printf("%#v\n", sshCfg)
+		fmt.Printf("%#v\n", cfg)
 		conn, err := ssh.Dial("tcp", cfg.sshAddr, sshCfg)
 		if err != nil {
 			return err
@@ -106,6 +121,7 @@ func (p *Proxy) Run(ctx context.Context) error {
 
 		remote, err := conn.Dial("tcp", cfg.remoteAddr)
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
 
@@ -115,7 +131,6 @@ func (p *Proxy) Run(ctx context.Context) error {
 		}
 		defer local.Close()
 
-		env := well.NewEnvironment(ctx)
 		env.Go(func(ctx context.Context) error {
 			for {
 				client, err := local.Accept()
@@ -127,6 +142,6 @@ func (p *Proxy) Run(ctx context.Context) error {
 			}
 		})
 	}
-
-	return nil
+	env.Stop()
+	return env.Wait()
 }

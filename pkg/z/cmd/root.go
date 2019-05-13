@@ -73,5 +73,8 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	zcmd.SetDefaultConfigValues(cfg)
+	if err := zcmd.SetDefaultConfigValues(cfg); err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
 }

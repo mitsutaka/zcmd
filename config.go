@@ -3,11 +3,13 @@ package zcmd
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/mitchellh/go-homedir"
+	"github.com/tcnksm/go-input"
 	yaml "gopkg.in/yaml.v2"
 )
 
-// Config zcmd config
 type Config struct {
 	Sync     SyncConfig     `yaml:"sync,omitempty"`
 	Backup   BackupConfig   `yaml:"backup,omitempty"`
@@ -94,12 +96,15 @@ func NewConfig(source string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	SetDefaultConfigValues(cfg)
+	err = SetDefaultConfigValues(cfg)
+	if err != nil {
+		return nil, err
+	}
 	return cfg, nil
 }
 
 // SetDefaultConfigValues set default values if omitted
-func SetDefaultConfigValues(cfg *Config) {
+func SetDefaultConfigValues(cfg *Config) error {
 	if len(cfg.DotFiles.Dir) == 0 {
 		cfg.DotFiles.Dir = DefaultDotFilesDir
 	}
@@ -107,5 +112,29 @@ func SetDefaultConfigValues(cfg *Config) {
 		if cfg.Proxy[i].Port == 0 {
 			cfg.Proxy[i].Port = DefaultProxyPort
 		}
+		home, err := homedir.Dir()
+		if err != nil {
+			return err
+		}
+		if strings.HasPrefix(cfg.Proxy[i].PrivateKey, "~/") {
+			cfg.Proxy[i].PrivateKey = filepath.Join(home, cfg.Proxy[i].PrivateKey[2:])
+		}
 	}
+
+	return nil
+}
+
+func Ask(param *string, query string, hide bool) error {
+	ui := input.DefaultUI()
+	ans, err := ui.Ask(query, &input.Options{
+		Default:  *param,
+		Required: true,
+		Loop:     true,
+		Hide:     hide,
+	})
+	if err != nil {
+		return err
+	}
+	*param = strings.TrimSpace(ans)
+	return nil
 }
