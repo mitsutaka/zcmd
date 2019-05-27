@@ -3,6 +3,8 @@ package zcmd
 import (
 	"reflect"
 	"testing"
+
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func TestConfig(t *testing.T) {
@@ -165,7 +167,7 @@ proxy:
   - name: testforward1
     user: ubuntu
     address: remotehost1
-    privateKey: ~/.ssh/id_rsa
+    privateKey: /home/mitz/.ssh/id_rsa
     forward:
       # Local forwarding
       - type: local
@@ -181,7 +183,7 @@ proxy:
   - name: testforward2
     user: admin
     address: remotehost2
-    privateKey: ~/.ssh/id_ecdsa
+    privateKey: /home/mitz/.ssh/id_ecdsa
     port: 10000
     forward:
       # Remote forwarding
@@ -197,7 +199,7 @@ proxy:
 						Name:       "testforward1",
 						User:       "ubuntu",
 						Address:    "remotehost1",
-						PrivateKey: "~/.ssh/id_rsa",
+						PrivateKey: "/home/mitz/.ssh/id_rsa",
 						Port:       DefaultProxyPort,
 						Forward: []ProxyForwardConfig{
 							{
@@ -220,7 +222,7 @@ proxy:
 						Name:       "testforward2",
 						User:       "admin",
 						Address:    "remotehost2",
-						PrivateKey: "~/.ssh/id_ecdsa",
+						PrivateKey: "/home/mitz/.ssh/id_ecdsa",
 						Port:       10000,
 						Forward: []ProxyForwardConfig{
 							{
@@ -246,7 +248,7 @@ proxy:
 			t.Error(err)
 		}
 		if !reflect.DeepEqual(cfg, c.expected) {
-			t.Errorf("%#v != %#v", cfg, c.expected)
+			t.Errorf(pretty.Compare(cfg, c.expected))
 		}
 	}
 }

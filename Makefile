@@ -2,7 +2,7 @@ test:
 	test -z "$$(gofmt -s -l -e . | grep -v '^vendor' | tee /dev/stderr)"
 	GO111MODULE=on go build -mod=vendor -v ./...
 	GO111MODULE=on go test -mod=vendor -race -v ./...
-	golangci-lint run --presets bugs,unused,format,complexity,performance -D unparam --verbose
+	golangci-lint run --presets bugs,unused,format,complexity,performance -D unparam,gosec --verbose
 	misspell -error $(shell go list -mod=vendor ./... | grep -v /vendor/)
 
 lint-all:

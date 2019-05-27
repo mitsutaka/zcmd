@@ -54,7 +54,7 @@ func NewProxy(cfgs []ProxyConfig) (*Proxy, error) {
 
 func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 	buff, err := ioutil.ReadFile(keyPath)
-	if err != err {
+	if err != nil {
 		return nil, err
 	}
 	signer, err := ssh.ParsePrivateKey(buff)
@@ -111,8 +111,6 @@ func (p *Proxy) Run(ctx context.Context) error {
 			return err
 		}
 
-		fmt.Printf("%#v\n", sshCfg)
-		fmt.Printf("%#v\n", cfg)
 		conn, err := ssh.Dial("tcp", cfg.sshAddr, sshCfg)
 		if err != nil {
 			return err
@@ -121,7 +119,6 @@ func (p *Proxy) Run(ctx context.Context) error {
 
 		remote, err := conn.Dial("tcp", cfg.remoteAddr)
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 

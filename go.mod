@@ -3,6 +3,7 @@ module github.com/mitsutaka/zcmd
 require (
 	github.com/cybozu-go/well v1.8.1
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/kylelemons/godebug v1.1.0
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/sirupsen/logrus v1.3.0
 	github.com/spf13/cobra v0.0.3
