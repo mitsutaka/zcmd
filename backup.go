@@ -10,9 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/cybozu-go/well"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
