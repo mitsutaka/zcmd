@@ -10,7 +10,6 @@ import (
 
 	"github.com/cybozu-go/well"
 	log "github.com/sirupsen/logrus"
-
 	"golang.org/x/crypto/ssh"
 )
 
