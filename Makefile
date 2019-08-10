@@ -1,3 +1,6 @@
+GOFLAGS = -mod=vendor
+export GOFLAGS
+
 test:
 	GO111MODULE=on go build -mod=vendor -v ./...
 	GO111MODULE=on go test -mod=vendor -race -v ./...
