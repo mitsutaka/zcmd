@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//nolint[dupl]
+
 //nolint[gochecknoglobals]
 var syncPushCmdOpts struct {
 	dryRun    bool

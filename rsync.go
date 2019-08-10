@@ -5,6 +5,11 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strconv"
+	"strings"
+
+	"github.com/cybozu-go/well"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -57,4 +62,57 @@ func getRsyncCmd() ([]string, error) {
 	cmd = append(cmd, cmdPrefix...)
 	cmd = append(cmd, cmdRsync...)
 	return cmd, nil
+}
+
+func runRsyncCmd(ctx context.Context, name, pidFile string, rcs []rsyncClient) error {
+	pid, err := os.Create(pidFile)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(pid.Name())
+
+	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
+	if err != nil {
+		return err
+	}
+	err = pid.Close()
+	if err != nil {
+		return err
+	}
+
+	env := well.NewEnvironment(ctx)
+	for _, rc := range rcs {
+		rc := rc
+		env.Go(func(ctx context.Context) error {
+			defer func() {
+				if rc.excludeFile != nil {
+					os.Remove(rc.excludeFile.Name())
+				}
+			}()
+
+			log.WithFields(log.Fields{
+				"command": strings.Join(rc.command, " "),
+			}).Info(name + " started")
+
+			cmd := well.CommandContext(ctx, rc.command[0], rc.command[1:]...)
+
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err := cmd.Run()
+			if err != nil {
+				log.WithFields(log.Fields{
+					"command": strings.Join(rc.command, " "),
+					"error":   err,
+				}).Error(name + " finished")
+				return err
+			}
+			log.WithFields(log.Fields{
+				"command": strings.Join(rc.command, " "),
+			}).Info(name + " finished")
+			return nil
+		})
+	}
+	env.Stop()
+	return env.Wait()
+
 }

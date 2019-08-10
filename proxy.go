@@ -68,7 +68,7 @@ func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 	return signer, nil
 }
 
-func makeSshConfig(cfg sshClientConfig) (*ssh.ClientConfig, error) {
+func makeSSHConfig(cfg sshClientConfig) *ssh.ClientConfig {
 	return &ssh.ClientConfig{
 		User: cfg.user,
 		Auth: []ssh.AuthMethod{
@@ -76,10 +76,10 @@ func makeSshConfig(cfg sshClientConfig) (*ssh.ClientConfig, error) {
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         10 * time.Second,
-	}, nil
+	}
 }
 
-func handleClient(client net.Conn, remote net.Conn) {
+func handleClient(client net.Conn, remote io.ReadWriter) {
 	defer client.Close()
 	chDone := make(chan bool)
 
@@ -105,12 +105,7 @@ func handleClient(client net.Conn, remote net.Conn) {
 func (p *Proxy) Run(ctx context.Context) error {
 	env := well.NewEnvironment(ctx)
 	for _, cfg := range p.sshCfg {
-		sshCfg, err := makeSshConfig(*cfg)
-		if err != nil {
-			return err
-		}
-
-		conn, err := ssh.Dial("tcp", cfg.sshAddr, sshCfg)
+		conn, err := ssh.Dial("tcp", cfg.sshAddr, makeSSHConfig(*cfg))
 		if err != nil {
 			return err
 		}

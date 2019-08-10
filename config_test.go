@@ -45,7 +45,7 @@ sync:
 					},
 				},
 				DotFiles: DotFilesConfig{
-					Dir: DefaultDotFilesDir,
+					Dir: defaultDotFilesDir,
 				},
 			},
 		},
@@ -80,7 +80,7 @@ sync:
 					},
 				},
 				DotFiles: DotFilesConfig{
-					Dir: DefaultDotFilesDir,
+					Dir: defaultDotFilesDir,
 				},
 			},
 		},
@@ -104,7 +104,7 @@ backup:
 					Excludes:     []string{"foo", "bar"},
 				},
 				DotFiles: DotFilesConfig{
-					Dir: DefaultDotFilesDir,
+					Dir: defaultDotFilesDir,
 				},
 			},
 		},
@@ -118,7 +118,7 @@ repos:
 					Root: "/repos",
 				},
 				DotFiles: DotFilesConfig{
-					Dir: DefaultDotFilesDir,
+					Dir: defaultDotFilesDir,
 				},
 			},
 		},
@@ -155,7 +155,7 @@ dotfiles:
 `,
 			expected: &Config{
 				DotFiles: DotFilesConfig{
-					Dir:   DefaultDotFilesDir,
+					Dir:   defaultDotFilesDir,
 					Hosts: []string{"YOUR_HOSTNAME"},
 					Files: []string{"bashrc", "config/sway/config", "spacemacs", "ssh"},
 				},
@@ -236,7 +236,7 @@ proxy:
 					},
 				},
 				DotFiles: DotFilesConfig{
-					Dir: DefaultDotFilesDir,
+					Dir: defaultDotFilesDir,
 				},
 			},
 		},

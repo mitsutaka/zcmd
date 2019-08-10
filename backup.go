@@ -7,11 +7,6 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"strconv"
-	"strings"
-
-	"github.com/cybozu-go/well"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -44,55 +39,7 @@ func (b *Backup) Do(ctx context.Context) error {
 		return err
 	}
 
-	pid, err := os.Create(backupPidFile)
-	if err != nil {
-		return err
-	}
-	defer os.Remove(pid.Name())
-
-	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
-	if err != nil {
-		return err
-	}
-	err = pid.Close()
-	if err != nil {
-		return err
-	}
-
-	env := well.NewEnvironment(ctx)
-	for _, rc := range rcs {
-		rc := rc
-		env.Go(func(ctx context.Context) error {
-			defer func() {
-				if rc.excludeFile != nil {
-					os.Remove(rc.excludeFile.Name())
-				}
-			}()
-
-			log.WithFields(log.Fields{
-				"command": strings.Join(rc.command, " "),
-			}).Info("backup started")
-
-			cmd := well.CommandContext(ctx, rc.command[0], rc.command[1:]...)
-
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err := cmd.Run()
-			if err != nil {
-				log.WithFields(log.Fields{
-					"command": strings.Join(rc.command, " "),
-					"error":   err,
-				}).Error("backup finished")
-				return err
-			}
-			log.WithFields(log.Fields{
-				"command": strings.Join(rc.command, " "),
-			}).Info("backup finished")
-			return nil
-		})
-	}
-	env.Stop()
-	return env.Wait()
+	return runRsyncCmd(ctx, "backup", backupPidFile, rcs)
 }
 
 // GenerateCmd generates rsync command

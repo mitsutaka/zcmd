@@ -5,11 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
-
-	"github.com/cybozu-go/well"
-	log "github.com/sirupsen/logrus"
 )
 
 const syncPidFile = "/tmp/sync.pid"
@@ -37,54 +33,7 @@ func (s *Sync) Do(ctx context.Context) error {
 		return err
 	}
 
-	pid, err := os.Create(syncPidFile)
-	if err != nil {
-		return err
-	}
-	defer os.Remove(pid.Name())
-	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
-	if err != nil {
-		return err
-	}
-	err = pid.Close()
-	if err != nil {
-		return err
-	}
-
-	env := well.NewEnvironment(ctx)
-	for _, rc := range rcs {
-		rc := rc
-
-		env.Go(func(ctx context.Context) error {
-			defer func() {
-				if rc.excludeFile != nil {
-					os.Remove(rc.excludeFile.Name())
-				}
-			}()
-
-			log.WithFields(log.Fields{
-				"command": strings.Join(rc.command, " "),
-			}).Info("sync started")
-
-			cmd := well.CommandContext(ctx, rc.command[0], rc.command[1:]...)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err := cmd.Run()
-			if err != nil {
-				log.WithFields(log.Fields{
-					"command": strings.Join(rc.command, " "),
-					"error":   err,
-				}).Error("sync finished")
-				return err
-			}
-			log.WithFields(log.Fields{
-				"command": strings.Join(rc.command, " "),
-			}).Info("sync finished")
-			return nil
-		})
-	}
-	env.Stop()
-	return env.Wait()
+	return runRsyncCmd(ctx, "sync", syncPidFile, rcs)
 }
 
 // GenerateCmd generates rsync command

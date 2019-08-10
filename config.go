@@ -45,8 +45,9 @@ type ReposConfig struct {
 }
 
 var (
-	// DefaultDotFilesDir is default dotfiles directory path
-	DefaultDotFilesDir = filepath.Join(os.Getenv("HOME"), ".zdotfiles")
+	// nolint[gochecknoglobals]
+	// defaultDotFilesDir is default dotfiles directory path
+	defaultDotFilesDir = filepath.Join(os.Getenv("HOME"), ".zdotfiles")
 )
 
 // DotFilesConfig is dotfiles: config
@@ -106,7 +107,7 @@ func NewConfig(source string) (*Config, error) {
 // SetDefaultConfigValues set default values if omitted
 func SetDefaultConfigValues(cfg *Config) error {
 	if len(cfg.DotFiles.Dir) == 0 {
-		cfg.DotFiles.Dir = DefaultDotFilesDir
+		cfg.DotFiles.Dir = defaultDotFilesDir
 	}
 	for i := range cfg.Proxy {
 		if cfg.Proxy[i].Port == 0 {
