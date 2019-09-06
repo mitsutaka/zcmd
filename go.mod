@@ -2,16 +2,24 @@ module github.com/mitsutaka/zcmd
 
 require (
 	github.com/cybozu-go/well v1.8.1
-	github.com/golangci/golangci-lint v1.17.1
+	github.com/google/go-cmp v0.3.1 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kylelemons/godebug v1.1.0
-	github.com/mitchellh/go-homedir v1.0.0
-	github.com/onsi/ginkgo v1.8.0 // indirect
-	github.com/sirupsen/logrus v1.3.0
-	github.com/spf13/cobra v0.0.3
-	github.com/spf13/viper v1.3.1
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/magiconair/properties v1.8.1 // indirect
+	github.com/mitchellh/go-homedir v1.1.0
+	github.com/pelletier/go-toml v1.4.0 // indirect
+	github.com/sirupsen/logrus v1.4.2
+	github.com/spf13/afero v1.2.2 // indirect
+	github.com/spf13/cobra v0.0.5
+	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/spf13/viper v1.4.0
+	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8
-	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a
-	gopkg.in/src-d/go-git.v4 v4.8.1
+	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
+	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
+	golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a // indirect
+	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.2.2
 )
+
+go 1.13
