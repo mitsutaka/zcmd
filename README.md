@@ -96,7 +96,7 @@ repos:
 
 ### `dotfiles` command
 
-dotfiles manager inspired by https://github.com/dotphiles/dotphiles
+dotfiles manager inspired by <https://github.com/dotphiles/dotphiles>
 
 - `z dotfiles init GITURL`: Initialize dotfiles in local.
 - `z dotfiles pull`: Download latest dotfiles and make symbolic links.
@@ -115,6 +115,8 @@ dotfiles:
 ```
 
 ### `proxy` command
+
+***NOT IMPLEMENTED YET***
 
 Make multiple ssh port forward at once.
 
