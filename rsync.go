@@ -114,5 +114,4 @@ func runRsyncCmd(ctx context.Context, name, pidFile string, rcs []rsyncClient) e
 	}
 	env.Stop()
 	return env.Wait()
-
 }
