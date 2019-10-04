@@ -10,7 +10,7 @@ lint-all:
 	golangci-lint run --enable-all --verbose
 
 setup:
-	GO111MODULE=off go get github.com/golangci/golangci-lint/cmd/golangci-lint
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 mod:
 	go mod tidy
