@@ -5,9 +5,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"sigs.k8s.io/yaml"
+
 	"github.com/mitchellh/go-homedir"
 	"github.com/tcnksm/go-input"
-	yaml "gopkg.in/yaml.v2"
 )
 
 type Config struct {

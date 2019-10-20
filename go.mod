@@ -19,7 +19,7 @@ require (
 	golang.org/x/net v0.0.0-20191003171128-d98b1b443823 // indirect
 	golang.org/x/sys v0.0.0-20191003212358-c178f38b412c // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
-	gopkg.in/yaml.v2 v2.2.4
+	sigs.k8s.io/yaml v1.1.0
 )
 
 go 1.13
