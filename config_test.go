@@ -101,8 +101,7 @@ backup:
 				Backup: BackupConfig{
 					Destinations: []string{"/backup"},
 					Includes:     []string{"/", "/boot", "/home"},
-					Excludes:     []string{"foo", "bar"},
-				},
+					Excludes:     []string{"foo", "bar"}},
 				DotFiles: DotFilesConfig{
 					Dir: defaultDotFilesDir,
 				},
@@ -247,6 +246,7 @@ proxy:
 		if err != nil {
 			t.Error(err)
 		}
+
 		if !reflect.DeepEqual(cfg, c.expected) {
 			t.Errorf(pretty.Compare(cfg, c.expected))
 		}

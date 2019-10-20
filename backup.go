@@ -50,15 +50,17 @@ func (b *Backup) generateCmd() ([]rsyncClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmdRsync = append(cmdRsync, optsRsync...)
 
+	cmdRsync = append(cmdRsync, optsRsync...)
 	hostname, err := os.Hostname()
+
 	if err != nil {
 		return nil, err
 	}
 
 	i := 0
 	cmds := make([]rsyncClient, len(b.includes)*len(b.destinations))
+
 	for _, src := range b.includes {
 		for _, dst := range b.destinations {
 			var excludeFile *os.File
@@ -78,19 +80,26 @@ func (b *Backup) generateCmd() ([]rsyncClient, error) {
 			}
 
 			var cmd []string
+
 			u, err := url.Parse(dst)
+
 			if err != nil {
 				return nil, err
 			}
+
 			u.Path = path.Join(u.Path, hostname, datePath)
 			dst = u.String()
+
 			cmd = append(cmd, cmdRsync...)
+
 			if excludeFile != nil {
 				cmd = append(cmd, fmt.Sprintf("--exclude-from=%s", excludeFile.Name()))
 			}
+
 			if len(b.rsyncFlags) != 0 {
 				cmd = append(cmd, b.rsyncFlags)
 			}
+
 			cmd = append(cmd, src, dst)
 			cmds[i] = rsyncClient{
 				command:     cmd,

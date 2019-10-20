@@ -212,9 +212,11 @@ func testGenerateCmd(t *testing.T) {
 	for _, c := range cases {
 		sync := NewSync(c.cfgs, c.args, c.rsyncFlags)
 		rcs, err := sync.generateCmd()
+
 		if err != nil {
 			t.Error(err)
 		}
+
 		if !reflect.DeepEqual(rcs, c.expected) {
 			t.Errorf("%#v != %#v", rcs, c.expected)
 		}

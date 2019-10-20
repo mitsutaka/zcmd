@@ -21,6 +21,7 @@ func TestDotfiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer os.RemoveAll(dir)
 
 	err = os.Setenv("HOME", filepath.Join(dir, "home"))

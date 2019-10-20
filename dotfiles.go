@@ -41,10 +41,12 @@ func (d *DotFiler) Init(ctx context.Context, gitURL string) error {
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
+
 	_, err = git.PlainCloneContext(ctx, d.config.Dir, false, &git.CloneOptions{
 		URL:      gitURL,
 		Progress: os.Stdout,
 	})
+
 	if err != nil {
 		return err
 	}
@@ -58,6 +60,7 @@ func (d *DotFiler) Pull(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	log.WithFields(log.Fields{
 		"path": d.config.Dir,
 	}).Info("found git repository")
@@ -93,6 +96,7 @@ func (d *DotFiler) MakeSymlinks() error {
 		if err != nil && !os.IsNotExist(err) {
 			return err
 		}
+
 		if err == nil {
 			err := os.Remove(dst)
 			if err != nil {
@@ -104,10 +108,12 @@ func (d *DotFiler) MakeSymlinks() error {
 		if err != nil {
 			return err
 		}
+
 		log.WithFields(log.Fields{
 			"src": src,
 			"dst": dst,
 		}).Info("symlinked")
 	}
+
 	return nil
 }

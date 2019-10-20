@@ -94,13 +94,16 @@ type ProxyForwardConfig struct {
 func NewConfig(source string) (*Config, error) {
 	cfg := &Config{}
 	err := yaml.Unmarshal([]byte(source), cfg)
+
 	if err != nil {
 		return nil, err
 	}
+
 	err = SetDefaultConfigValues(cfg)
 	if err != nil {
 		return nil, err
 	}
+
 	return cfg, nil
 }
 
@@ -109,14 +112,17 @@ func SetDefaultConfigValues(cfg *Config) error {
 	if len(cfg.DotFiles.Dir) == 0 {
 		cfg.DotFiles.Dir = defaultDotFilesDir
 	}
+
 	for i := range cfg.Proxy {
 		if cfg.Proxy[i].Port == 0 {
 			cfg.Proxy[i].Port = DefaultProxyPort
 		}
+
 		home, err := homedir.Dir()
 		if err != nil {
 			return err
 		}
+
 		if strings.HasPrefix(cfg.Proxy[i].PrivateKey, "~/") {
 			cfg.Proxy[i].PrivateKey = filepath.Join(home, cfg.Proxy[i].PrivateKey[2:])
 		}
@@ -133,9 +139,12 @@ func Ask(param *string, query string, hide bool) error {
 		Loop:     true,
 		Hide:     hide,
 	})
+
 	if err != nil {
 		return err
 	}
+
 	*param = strings.TrimSpace(ans)
+
 	return nil
 }

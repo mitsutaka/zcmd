@@ -29,20 +29,22 @@ func gitClone(dir string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		gitPath := filepath.Join(dir, filepath.Base(u.Path))
 
+		gitPath := filepath.Join(dir, filepath.Base(u.Path))
 		args := []string{"clone", gitURL}
 		cmd := well.CommandContext(context.Background(), cmdGit, args...)
 		cmd.Dir = dir
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err = cmd.Run()
+
 		if err != nil {
 			return nil, err
 		}
 
 		repos[i] = gitPath
 	}
+
 	return repos, nil
 }
 
@@ -54,6 +56,7 @@ func testFind(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer os.RemoveAll(dir)
 
 	repos, err := gitClone(dir)
@@ -72,8 +75,11 @@ func testFind(t *testing.T) {
 	}
 
 	updPaths := make([]string, len(gitURLs))
+
 	copy(updPaths, upd.repositories)
+
 	clonedPaths := make([]string, len(gitURLs))
+
 	copy(clonedPaths, repos)
 
 	if !reflect.DeepEqual(updPaths, clonedPaths) {
@@ -89,6 +95,7 @@ func testClean(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer os.RemoveAll(dir)
 
 	repos, err := gitClone(dir)
@@ -112,6 +119,7 @@ func testCheckout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer os.RemoveAll(dir)
 
 	repos, err := gitClone(dir)
@@ -135,6 +143,7 @@ func testPull(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer os.RemoveAll(dir)
 
 	repos, err := gitClone(dir)

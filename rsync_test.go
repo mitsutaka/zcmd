@@ -11,6 +11,7 @@ func TestGetRsyncCmd(t *testing.T) {
 
 	var expected []string
 	expected = append(expected, sudoCmd...)
+
 	switch runtime.GOOS {
 	case "linux":
 		expected = append(expected, cmdRsyncLinux)
@@ -24,6 +25,7 @@ func TestGetRsyncCmd(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if !reflect.DeepEqual(cmdRsync, expected) {
 		t.Errorf("%v != %v", cmdRsync, expected)
 	}

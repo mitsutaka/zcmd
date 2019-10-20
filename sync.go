@@ -44,11 +44,13 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	cmdRsync = append(cmdRsync, optsRsync...)
 
 	targetSyncs := findTargetSyncs(s.cfgSyncs, s.argSyncs)
 
 	cmds := make([]rsyncClient, len(targetSyncs))
+
 	for i, sync := range targetSyncs {
 		var excludeFile *os.File
 		if sync.Excludes != nil {
@@ -67,9 +69,12 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 		}
 
 		var cmd []string
+
 		src := sync.Source
 		dst := sync.Destination
+
 		cmd = append(cmd, cmdRsync...)
+
 		if excludeFile != nil {
 			cmd = append(cmd, fmt.Sprintf("--exclude-from=%s", excludeFile.Name()))
 		}
@@ -77,9 +82,11 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 		if !strings.HasSuffix(src, "/") {
 			src += "/"
 		}
+
 		if len(s.rsyncFlags) != 0 {
 			cmd = append(cmd, s.rsyncFlags)
 		}
+
 		cmd = append(cmd, src, dst)
 
 		cmds[i] = rsyncClient{
@@ -107,5 +114,6 @@ func findTargetSyncs(cfgs []SyncInfo, args []string) []SyncInfo {
 			}
 		}
 	}
+
 	return targetCfgs
 }

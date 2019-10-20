@@ -25,6 +25,7 @@ func NewUpdater(root string) (*Updater, error) {
 	if len(root) == 0 {
 		return nil, errors.New("no root directory specified")
 	}
+
 	return &Updater{
 		root: root,
 	}, nil
@@ -59,10 +60,12 @@ func (u *Updater) Update(ctx context.Context, jobs int) error {
 	for i := 0; i < jobs; i++ {
 		jobChan <- struct{}{}
 	}
+
 	env := well.NewEnvironment(ctx)
 
 	for _, r := range u.repositories {
 		ri := r
+
 		env.Go(func(ctx context.Context) error {
 			<-jobChan
 			defer func() { jobChan <- struct{}{} }()
@@ -120,6 +123,7 @@ func (u *Updater) Update(ctx context.Context, jobs int) error {
 	}
 
 	env.Stop()
+
 	return env.Wait()
 }
 
@@ -129,6 +133,7 @@ func clean(ctx context.Context, path string) error {
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }
 
@@ -138,6 +143,7 @@ func checkoutMaster(ctx context.Context, path string) error {
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }
 
@@ -147,6 +153,7 @@ func pull(ctx context.Context, path string) error {
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }
 
@@ -156,5 +163,6 @@ func status(ctx context.Context, path string) error {
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }

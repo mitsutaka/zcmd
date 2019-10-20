@@ -47,6 +47,7 @@ func getRsyncCmd() ([]string, error) {
 	}
 
 	var cmdRsync []string
+
 	switch runtime.GOOS {
 	case "linux":
 		cmdRsync = []string{cmdRsyncLinux}
@@ -59,6 +60,7 @@ func getRsyncCmd() ([]string, error) {
 	var cmd []string
 	cmd = append(cmd, cmdPrefix...)
 	cmd = append(cmd, cmdRsync...)
+
 	return cmd, nil
 }
 
@@ -67,20 +69,25 @@ func runRsyncCmd(ctx context.Context, name, pidFile string, rcs []rsyncClient) e
 	if err != nil {
 		return err
 	}
+
 	defer os.Remove(pid.Name())
 
 	_, err = pid.WriteString(strconv.Itoa(os.Getpid()))
 	if err != nil {
 		return err
 	}
+
 	err = pid.Close()
+
 	if err != nil {
 		return err
 	}
 
 	env := well.NewEnvironment(ctx)
+
 	for _, rc := range rcs {
 		rc := rc
+
 		env.Go(func(ctx context.Context) error {
 			defer func() {
 				if rc.excludeFile != nil {
@@ -110,6 +117,8 @@ func runRsyncCmd(ctx context.Context, name, pidFile string, rcs []rsyncClient) e
 			return nil
 		})
 	}
+
 	env.Stop()
+
 	return env.Wait()
 }

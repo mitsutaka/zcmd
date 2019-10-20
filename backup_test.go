@@ -86,9 +86,11 @@ func TestBackup(t *testing.T) {
 	for _, c := range cases {
 		bk := NewBackup(&c.cfg, c.rsyncFlags)
 		rcs, err := bk.generateCmd()
+
 		if err != nil {
 			t.Error(err)
 		}
+
 		if !reflect.DeepEqual(rcs, c.expected) {
 			t.Errorf("%#v != %#v", rcs, c.expected)
 		}
