@@ -12,7 +12,7 @@ import (
 
 //nolint[gochecknoglobals]
 var backupOpts struct {
-	dryRun bool
+	rsyncFlags string
 }
 
 // backupCmd represents the backup command
@@ -23,7 +23,7 @@ var backupCmd = &cobra.Command{
 	Long:  `backup starts backup process local data to the remote server`,
 	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		bk := zcmd.NewBackup(&cfg.Backup, backupOpts.dryRun)
+		bk := zcmd.NewBackup(&cfg.Backup, backupOpts.rsyncFlags)
 
 		well.Go(func(ctx context.Context) error {
 			return bk.Do(ctx)
@@ -40,6 +40,6 @@ var backupCmd = &cobra.Command{
 
 //nolint[gochecknoinits]
 func init() {
-	backupCmd.Flags().BoolVarP(&backupOpts.dryRun, "dry-run", "n", false, "dry run")
+	backupCmd.Flags().StringVarP(&backupOpts.rsyncFlags, "rsync-flags", "r", "", "rsync flags")
 	rootCmd.AddCommand(backupCmd)
 }

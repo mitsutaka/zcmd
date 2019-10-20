@@ -17,8 +17,6 @@ const (
 	cmdRsyncDarwin = "/usr/local/bin/rsync"
 	// CmdRsyncLinux is default rsync absolute path for Linux
 	cmdRsyncLinux = "/usr/bin/rsync"
-	// OptDryRun is dry run option of rsync
-	OptDryRun = "--dry-run"
 )
 
 //nolint[gochecknoglobals]

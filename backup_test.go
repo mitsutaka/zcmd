@@ -15,40 +15,16 @@ func TestBackup(t *testing.T) {
 	}
 
 	cases := []struct {
-		cfg      BackupConfig
-		dryRun   bool
-		expected []rsyncClient
+		cfg        BackupConfig
+		rsyncFlags string
+		expected   []rsyncClient
 	}{
 		{
 			cfg: BackupConfig{
 				Destinations: []string{"/backup"},
 				Includes:     []string{"/", "/boot", "/home"},
 			},
-			dryRun: true,
-			expected: []rsyncClient{
-				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "--dry-run", "/", "/backup/" + hostname + "/backup-0000-00-00-000000"},
-					excludeFile: nil,
-				},
-				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "--dry-run", "/boot", "/backup/" + hostname + "/backup-0000-00-00-000000"},
-					excludeFile: nil,
-				},
-				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "--dry-run", "/home", "/backup/" + hostname + "/backup-0000-00-00-000000"},
-					excludeFile: nil,
-				},
-			},
-		},
-		{
-			cfg: BackupConfig{
-				Destinations: []string{"/backup"},
-				Includes:     []string{"/", "/boot", "/home"},
-			},
-			dryRun: false,
+			rsyncFlags: "",
 			expected: []rsyncClient{
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
@@ -69,10 +45,34 @@ func TestBackup(t *testing.T) {
 		},
 		{
 			cfg: BackupConfig{
+				Destinations: []string{"/backup"},
+				Includes:     []string{"/", "/boot", "/home"},
+			},
+			rsyncFlags: "-n",
+			expected: []rsyncClient{
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avxRP", "--stats", "--delete", "-n", "/", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+					excludeFile: nil,
+				},
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avxRP", "--stats", "--delete", "-n", "/boot", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+					excludeFile: nil,
+				},
+				{
+					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avxRP", "--stats", "--delete", "-n", "/home", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+					excludeFile: nil,
+				},
+			},
+		},
+		{
+			cfg: BackupConfig{
 				Destinations: []string{"rsync://localhost/backup"},
 				Includes:     []string{"/"},
 			},
-			dryRun: false,
+			rsyncFlags: "",
 			expected: []rsyncClient{
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
@@ -84,7 +84,7 @@ func TestBackup(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		bk := NewBackup(&c.cfg, c.dryRun)
+		bk := NewBackup(&c.cfg, c.rsyncFlags)
 		rcs, err := bk.generateCmd()
 		if err != nil {
 			t.Error(err)

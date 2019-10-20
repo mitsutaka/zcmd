@@ -108,10 +108,10 @@ func testGenerateCmd(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		cfgs     []SyncInfo
-		args     []string
-		dryRun   bool
-		expected []rsyncClient
+		cfgs       []SyncInfo
+		args       []string
+		rsyncFlags string
+		expected   []rsyncClient
 	}{
 		{
 			cfgs: []SyncInfo{
@@ -197,11 +197,12 @@ func testGenerateCmd(t *testing.T) {
 					Destination: "/tmp/foo",
 				},
 			},
-			args: []string{"foo"},
+			args:       []string{"foo"},
+			rsyncFlags: "-nv",
 			expected: []rsyncClient{
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avzP", "--stats", "--delete", "--delete-excluded", "rsync://localhost/foo/", "/tmp/foo"},
+						"-avzP", "--stats", "--delete", "--delete-excluded", "-nv", "rsync://localhost/foo/", "/tmp/foo"},
 					excludeFile: nil,
 				},
 			},
@@ -209,7 +210,7 @@ func testGenerateCmd(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		sync := NewSync(c.cfgs, c.args, c.dryRun)
+		sync := NewSync(c.cfgs, c.args, c.rsyncFlags)
 		rcs, err := sync.generateCmd()
 		if err != nil {
 			t.Error(err)

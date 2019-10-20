@@ -12,17 +12,17 @@ const syncPidFile = "/tmp/sync.pid"
 
 // Sync is client for sync pull
 type Sync struct {
-	argSyncs []string
-	cfgSyncs []SyncInfo
-	dryRun   bool
+	argSyncs   []string
+	cfgSyncs   []SyncInfo
+	rsyncFlags string
 }
 
 // NewSync returns Syncer
-func NewSync(sync []SyncInfo, argSyncs []string, dryRun bool) Rsync {
+func NewSync(sync []SyncInfo, argSyncs []string, rsyncFlags string) Rsync {
 	return &Sync{
-		argSyncs: argSyncs,
-		cfgSyncs: sync,
-		dryRun:   dryRun,
+		argSyncs:   argSyncs,
+		cfgSyncs:   sync,
+		rsyncFlags: rsyncFlags,
 	}
 }
 
@@ -70,15 +70,15 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 		src := sync.Source
 		dst := sync.Destination
 		cmd = append(cmd, cmdRsync...)
-		if s.dryRun {
-			cmd = append(cmd, OptDryRun)
-		}
 		if excludeFile != nil {
 			cmd = append(cmd, fmt.Sprintf("--exclude-from=%s", excludeFile.Name()))
 		}
 		// Add "/" to sync all files in the source URL directory
 		if !strings.HasSuffix(src, "/") {
 			src += "/"
+		}
+		if len(s.rsyncFlags) != 0 {
+			cmd = append(cmd, s.rsyncFlags)
 		}
 		cmd = append(cmd, src, dst)
 

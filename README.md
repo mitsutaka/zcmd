@@ -23,6 +23,8 @@ z
 - `z sync pull`: Pull files from the remote server in parallel.
 - `z sync push`: Push files to the remote server in parallel.
 
+Command line flag can append additional rsync flags. Default rsync flags are `-avzP --stats --delete --delete-excluded`.
+
 Configuration example `$HOME/.z.yaml`:
 
 ```yaml
@@ -56,6 +58,8 @@ sync:
 `rsync` wrapper command for backup.
 
 - `z backup`: Run backup to the remote server in parallel.
+
+Command line flag can append additional rsync flags. Default rsync flags are `-avzP --stats --delete`.
 
 Configuration example `$HOME/.z.yaml`:
 

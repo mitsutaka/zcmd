@@ -14,8 +14,8 @@ import (
 
 //nolint[gochecknoglobals]
 var syncPushCmdOpts struct {
-	dryRun    bool
-	syncPaths []string
+	rsyncFlags string
+	syncPaths  []string
 }
 
 // syncPushCmd represents the sync push command
@@ -39,7 +39,7 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 		return nil
 	},
 	Run: func(_ *cobra.Command, args []string) {
-		sync := zcmd.NewSync(cfg.Sync.Push, args, syncPushCmdOpts.dryRun)
+		sync := zcmd.NewSync(cfg.Sync.Push, args, syncPushCmdOpts.rsyncFlags)
 
 		well.Go(func(ctx context.Context) error {
 			return sync.Do(ctx)
@@ -56,6 +56,6 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 
 //nolint[gochecknoinits]
 func init() {
-	syncPushCmd.Flags().BoolVarP(&syncPushCmdOpts.dryRun, "dry-run", "n", false, "dry run")
+	syncPushCmd.Flags().StringVarP(&syncPushCmdOpts.rsyncFlags, "rsync-flags", "r", "", "rsync flags")
 	syncCmd.AddCommand(syncPushCmd)
 }

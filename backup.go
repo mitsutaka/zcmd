@@ -19,16 +19,16 @@ type Backup struct {
 	destinations []string
 	includes     []string
 	excludes     []string
-	dryRun       bool
+	rsyncFlags   string
 }
 
 // NewBackup returns Syncer
-func NewBackup(cfg *BackupConfig, dryRun bool) Rsync {
+func NewBackup(cfg *BackupConfig, rsyncFlags string) Rsync {
 	return &Backup{
 		includes:     cfg.Includes,
 		excludes:     cfg.Excludes,
 		destinations: cfg.Destinations,
-		dryRun:       dryRun,
+		rsyncFlags:   rsyncFlags,
 	}
 }
 
@@ -85,11 +85,11 @@ func (b *Backup) generateCmd() ([]rsyncClient, error) {
 			u.Path = path.Join(u.Path, hostname, datePath)
 			dst = u.String()
 			cmd = append(cmd, cmdRsync...)
-			if b.dryRun {
-				cmd = append(cmd, OptDryRun)
-			}
 			if excludeFile != nil {
 				cmd = append(cmd, fmt.Sprintf("--exclude-from=%s", excludeFile.Name()))
+			}
+			if len(b.rsyncFlags) != 0 {
+				cmd = append(cmd, b.rsyncFlags)
 			}
 			cmd = append(cmd, src, dst)
 			cmds[i] = rsyncClient{
