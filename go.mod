@@ -2,7 +2,7 @@ module github.com/mitsutaka/zcmd
 
 require (
 	github.com/cybozu-go/well v1.9.0
-	github.com/golangci/golangci-lint v1.19.1
+	github.com/golangci/golangci-lint v1.21.0
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kylelemons/godebug v1.1.0
