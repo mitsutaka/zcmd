@@ -15,11 +15,13 @@ func TestBackup(t *testing.T) {
 	}
 
 	cases := []struct {
+		name       string
 		cfg        BackupConfig
 		rsyncFlags string
 		expected   []rsyncClient
 	}{
 		{
+			name: "1-destination-3-sources",
 			cfg: BackupConfig{
 				Destinations: []string{"/backup"},
 				Includes:     []string{"/", "/boot", "/home"},
@@ -44,6 +46,7 @@ func TestBackup(t *testing.T) {
 			},
 		},
 		{
+			name: "1-destination-3-sources-rsync-flags",
 			cfg: BackupConfig{
 				Destinations: []string{"/backup"},
 				Includes:     []string{"/", "/boot", "/home"},
@@ -68,6 +71,7 @@ func TestBackup(t *testing.T) {
 			},
 		},
 		{
+			name: "1-rsync-destination-1-source",
 			cfg: BackupConfig{
 				Destinations: []string{"rsync://localhost/backup"},
 				Includes:     []string{"/"},
@@ -84,15 +88,21 @@ func TestBackup(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		bk := NewBackup(&c.cfg, c.rsyncFlags)
-		rcs, err := bk.generateCmd()
+		cfg := c.cfg
+		rsyncFlags := c.rsyncFlags
+		expected := c.expected
 
-		if err != nil {
-			t.Error(err)
-		}
+		t.Run(c.name, func(t *testing.T) {
+			bk := NewBackup(&cfg, rsyncFlags)
+			rcs, err := bk.generateCmd()
 
-		if !reflect.DeepEqual(rcs, c.expected) {
-			t.Errorf("%#v != %#v", rcs, c.expected)
-		}
+			if err != nil {
+				t.Error(err)
+			}
+
+			if !reflect.DeepEqual(rcs, expected) {
+				t.Errorf("%#v != %#v", rcs, expected)
+			}
+		})
 	}
 }

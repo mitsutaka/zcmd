@@ -40,9 +40,9 @@ type Rsync interface {
 }
 
 // getRsyncCmd returns rsync command and arguments for each platform
-func getRsyncCmd() ([]string, error) {
+func getRsyncCmd(disableSudo bool) ([]string, error) {
 	var cmdPrefix []string
-	if os.Getuid() != 0 {
+	if os.Getuid() != 0 && !disableSudo {
 		cmdPrefix = sudoCmd
 	}
 

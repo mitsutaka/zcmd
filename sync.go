@@ -40,13 +40,6 @@ func (s *Sync) Do(ctx context.Context) error {
 func (s *Sync) generateCmd() ([]rsyncClient, error) {
 	var optsRsync = []string{"-avzP", "--stats", "--delete", "--delete-excluded"}
 
-	cmdRsync, err := getRsyncCmd()
-	if err != nil {
-		return nil, err
-	}
-
-	cmdRsync = append(cmdRsync, optsRsync...)
-
 	targetSyncs := findTargetSyncs(s.cfgSyncs, s.argSyncs)
 
 	cmds := make([]rsyncClient, len(targetSyncs))
@@ -54,7 +47,7 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 	for i, sync := range targetSyncs {
 		var excludeFile *os.File
 		if sync.Excludes != nil {
-			excludeFile, err = ioutil.TempFile("", sync.Name)
+			excludeFile, err := ioutil.TempFile("", sync.Name)
 			if err != nil {
 				return nil, err
 			}
@@ -70,10 +63,16 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 
 		var cmd []string
 
-		src := sync.Source
-		dst := sync.Destination
+		cmdRsync, err := getRsyncCmd(sync.DisableSudo)
+		if err != nil {
+			return nil, err
+		}
 
 		cmd = append(cmd, cmdRsync...)
+		cmd = append(cmd, optsRsync...)
+
+		src := sync.Source
+		dst := sync.Destination
 
 		if excludeFile != nil {
 			cmd = append(cmd, fmt.Sprintf("--exclude-from=%s", excludeFile.Name()))

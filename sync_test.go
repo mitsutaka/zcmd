@@ -108,12 +108,14 @@ func testGenerateCmd(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
+		name       string
 		cfgs       []SyncInfo
 		args       []string
 		rsyncFlags string
 		expected   []rsyncClient
 	}{
 		{
+			name: "2-sync",
 			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
@@ -141,6 +143,7 @@ func testGenerateCmd(t *testing.T) {
 			},
 		},
 		{
+			name: "2-sync-and-1-arg",
 			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
@@ -163,6 +166,7 @@ func testGenerateCmd(t *testing.T) {
 			},
 		},
 		{
+			name: "2-sync-and-2-sync",
 			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
@@ -173,6 +177,7 @@ func testGenerateCmd(t *testing.T) {
 					Name:        "bar",
 					Source:      "/bar",
 					Destination: "/tmp/bar",
+					DisableSudo: true,
 				},
 			},
 			args: []string{"foo", "bar"},
@@ -183,13 +188,14 @@ func testGenerateCmd(t *testing.T) {
 					excludeFile: nil,
 				},
 				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+					command: []string{"/usr/bin/rsync",
 						"-avzP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
 					excludeFile: nil,
 				},
 			},
 		},
 		{
+			name: "1-sync-with-rsync-flags",
 			cfgs: []SyncInfo{
 				{
 					Name:        "foo",
@@ -210,16 +216,23 @@ func testGenerateCmd(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		sync := NewSync(c.cfgs, c.args, c.rsyncFlags)
-		rcs, err := sync.generateCmd()
+		cfgs := c.cfgs
+		args := c.args
+		rsyncFlags := c.rsyncFlags
+		expected := c.expected
 
-		if err != nil {
-			t.Error(err)
-		}
+		t.Run(c.name, func(t *testing.T) {
+			sync := NewSync(cfgs, args, rsyncFlags)
+			rcs, err := sync.generateCmd()
 
-		if !reflect.DeepEqual(rcs, c.expected) {
-			t.Errorf("%#v != %#v", rcs, c.expected)
-		}
+			if err != nil {
+				t.Error(err)
+			}
+
+			if !reflect.DeepEqual(rcs, expected) {
+				t.Errorf("%#v != %#v", rcs, expected)
+			}
+		})
 	}
 }
 

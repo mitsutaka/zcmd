@@ -12,37 +12,38 @@ import (
 )
 
 type Config struct {
-	Sync     SyncConfig     `yaml:"sync,omitempty"`
-	Backup   BackupConfig   `yaml:"backup,omitempty"`
-	Repos    ReposConfig    `yaml:"repos,omitempty"`
-	DotFiles DotFilesConfig `yaml:"dotfiles,omitempty"`
-	Proxy    []ProxyConfig  `yaml:"proxy,omitempty"`
+	Sync     SyncConfig     `json:"sync,omitempty"`
+	Backup   BackupConfig   `json:"backup,omitempty"`
+	Repos    ReposConfig    `json:"repos,omitempty"`
+	DotFiles DotFilesConfig `json:"dotfiles,omitempty"`
+	Proxy    []ProxyConfig  `json:"proxy,omitempty"`
 }
 
 // SyncConfig is sync: config
 type SyncConfig struct {
-	Pull []SyncInfo `yaml:"pull,omitempty"`
-	Push []SyncInfo `yaml:"push,omitempty"`
+	Pull []SyncInfo `json:"pull,omitempty"`
+	Push []SyncInfo `json:"push,omitempty"`
 }
 
 // SyncInfo is path information for synchronize directories
 type SyncInfo struct {
-	Name        string   `yaml:"name"`
-	Source      string   `yaml:"source"`
-	Destination string   `yaml:"destination"`
-	Excludes    []string `yaml:"excludes,omitempty"`
+	Name        string   `json:"name"`
+	Source      string   `json:"source"`
+	Destination string   `json:"destination"`
+	Excludes    []string `json:"excludes,omitempty"`
+	DisableSudo bool     `json:"disable_sudo,omitempty"`
 }
 
 // BackupConfig is backup: config
 type BackupConfig struct {
-	Destinations []string `yaml:"destinations"`
-	Includes     []string `yaml:"includes"`
-	Excludes     []string `yaml:"excludes,omitempty"`
+	Destinations []string `json:"destinations"`
+	Includes     []string `json:"includes"`
+	Excludes     []string `json:"excludes,omitempty"`
 }
 
 // ReposConfig is repos: config
 type ReposConfig struct {
-	Root string `yaml:"root"`
+	Root string `json:"root"`
 }
 
 var (
@@ -53,19 +54,19 @@ var (
 
 // DotFilesConfig is dotfiles: config
 type DotFilesConfig struct {
-	Dir   string   `yaml:"dir,omitempty"`
-	Hosts []string `yaml:"hosts"`
-	Files []string `yaml:"files"`
+	Dir   string   `json:"dir,omitempty"`
+	Hosts []string `json:"hosts"`
+	Files []string `json:"files"`
 }
 
 // ProxyConfig is proxy: config
 type ProxyConfig struct {
-	Name       string               `yaml:"name"`
-	User       string               `yaml:"user,omitempty"`
-	Address    string               `yaml:"address"`
-	Port       int                  `yaml:"port,omitempty"`
-	PrivateKey string               `yaml:"privateKey"`
-	Forward    []ProxyForwardConfig `yaml:"forward"`
+	Name       string               `json:"name"`
+	User       string               `json:"user,omitempty"`
+	Address    string               `json:"address"`
+	Port       int                  `json:"port,omitempty"`
+	PrivateKey string               `json:"privateKey"`
+	Forward    []ProxyForwardConfig `json:"forward"`
 }
 
 // ProxyForwardType is ssh forwarding type
@@ -84,11 +85,11 @@ const (
 
 // ProxyForwardConfig is forward: config in proxy;
 type ProxyForwardConfig struct {
-	Type          ProxyForwardType `yaml:"type"`
-	BindAddress   string           `yaml:"bindAddress,omitempty"`
-	BindPort      int              `yaml:"bindPort"`
-	RemoteAddress string           `yaml:"remoteAddress,omitempty"`
-	RemotePort    int              `yaml:"remotePort,omitempty"`
+	Type          ProxyForwardType `json:"type"`
+	BindAddress   string           `json:"bindAddress,omitempty"`
+	BindPort      int              `json:"bindPort"`
+	RemoteAddress string           `json:"remoteAddress,omitempty"`
+	RemotePort    int              `json:"remotePort,omitempty"`
 }
 
 // NewConfig returns new Config

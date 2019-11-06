@@ -11,10 +11,12 @@ func TestConfig(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
+		name     string
 		source   string
 		expected *Config
 	}{
 		{
+			name: "sync-1",
 			source: `
 sync:
   pull:
@@ -35,12 +37,14 @@ sync:
 							Name:        "foo",
 							Source:      "/foo",
 							Destination: "/tmp/foo",
+							DisableSudo: false,
 						},
 						{
 							Name:        "bar",
 							Source:      "/bar",
 							Destination: "/tmp/bar",
 							Excludes:    []string{"aaa", "bbb"},
+							DisableSudo: false,
 						},
 					},
 				},
@@ -50,6 +54,7 @@ sync:
 			},
 		},
 		{
+			name: "sync-2",
 			source: `
 sync:
   push:
@@ -62,6 +67,7 @@ sync:
       excludes:
         - aaa
         - bbb
+      disable_sudo: true
 `,
 			expected: &Config{
 				Sync: SyncConfig{
@@ -70,12 +76,14 @@ sync:
 							Name:        "foo",
 							Source:      "/foo",
 							Destination: "/tmp/foo",
+							DisableSudo: false,
 						},
 						{
 							Name:        "bar",
 							Source:      "/bar",
 							Destination: "/tmp/bar",
 							Excludes:    []string{"aaa", "bbb"},
+							DisableSudo: true,
 						},
 					},
 				},
@@ -85,6 +93,7 @@ sync:
 			},
 		},
 		{
+			name: "backup",
 			source: `
 backup:
   destinations:
@@ -108,6 +117,7 @@ backup:
 			},
 		},
 		{
+			name: "repos",
 			source: `
 repos:
   root: /repos
@@ -122,6 +132,7 @@ repos:
 			},
 		},
 		{
+			name: "dotfiles-1",
 			source: `
 dotfiles:
   dir: /home/mitz/.dotfiles
@@ -142,6 +153,7 @@ dotfiles:
 			},
 		},
 		{
+			name: "dotfiles-2",
 			source: `
 dotfiles:
   hosts:
@@ -161,6 +173,7 @@ dotfiles:
 			},
 		},
 		{
+			name: "proxy",
 			source: `
 proxy:
   - name: testforward1
@@ -242,13 +255,18 @@ proxy:
 	}
 
 	for _, c := range cases {
-		cfg, err := NewConfig(c.source)
-		if err != nil {
-			t.Error(err)
-		}
+		source := c.source
+		expected := c.expected
 
-		if !reflect.DeepEqual(cfg, c.expected) {
-			t.Errorf(pretty.Compare(cfg, c.expected))
-		}
+		t.Run(c.name, func(t *testing.T) {
+			cfg, err := NewConfig(source)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if !reflect.DeepEqual(cfg, expected) {
+				t.Errorf(pretty.Compare(cfg, expected))
+			}
+		})
 	}
 }

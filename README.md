@@ -51,6 +51,11 @@ sync:
       destination: RSYNC_URL
       excludes:
         - zzzz
+    - name: fuse
+      source: /home/mitz/Documents
+      destination: LOCAL_PATH
+      # Some cases should disable sudo with fuse mounts
+      disable_sudo: true
 ```
 
 ### `backup` command
