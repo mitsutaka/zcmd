@@ -192,7 +192,7 @@ github.com/spf13/cobra
 github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.5
 github.com/spf13/pflag
-# github.com/spf13/viper v1.4.0
+# github.com/spf13/viper v1.5.0
 github.com/spf13/viper
 # github.com/src-d/gcfg v1.4.0
 github.com/src-d/gcfg
@@ -204,6 +204,8 @@ github.com/stretchr/objx
 # github.com/stretchr/testify v1.4.0
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/mock
+# github.com/subosito/gotenv v1.2.0
+github.com/subosito/gotenv
 # github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8
 github.com/tcnksm/go-input
 # github.com/timakin/bodyclose v0.0.0-20190930140734-f7f2e9bca95e
