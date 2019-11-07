@@ -46,15 +46,18 @@ func (s *Sync) generateCmd() ([]rsyncClient, error) {
 
 	for i, sync := range targetSyncs {
 		var excludeFile *os.File
+
 		if sync.Excludes != nil {
-			excludeFile, err := ioutil.TempFile("", sync.Name)
+			var err error
+
+			excludeFile, err = ioutil.TempFile("", sync.Name)
 			if err != nil {
 				return nil, err
 			}
 			defer excludeFile.Close()
 
 			for _, exclude := range sync.Excludes {
-				_, err := excludeFile.WriteString(fmt.Sprintf("*%s*\n", exclude))
+				_, err = excludeFile.WriteString(fmt.Sprintf("*%s*\n", exclude))
 				if err != nil {
 					return nil, err
 				}
