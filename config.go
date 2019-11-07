@@ -1,49 +1,50 @@
 package zcmd
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"sigs.k8s.io/yaml"
-
 	"github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/mapstructure"
+	"github.com/spf13/viper"
 	"github.com/tcnksm/go-input"
 )
 
 type Config struct {
-	Sync     SyncConfig     `json:"sync,omitempty"`
-	Backup   BackupConfig   `json:"backup,omitempty"`
-	Repos    ReposConfig    `json:"repos,omitempty"`
-	DotFiles DotFilesConfig `json:"dotfiles,omitempty"`
-	Proxy    []ProxyConfig  `json:"proxy,omitempty"`
+	Sync     SyncConfig     `yaml:"sync,omitempty"`
+	Backup   BackupConfig   `yaml:"backup,omitempty"`
+	Repos    ReposConfig    `yaml:"repos,omitempty"`
+	DotFiles DotFilesConfig `yaml:"dotfiles,omitempty"`
+	Proxy    []ProxyConfig  `yaml:"proxy,omitempty"`
 }
 
 // SyncConfig is sync: config
 type SyncConfig struct {
-	Pull []SyncInfo `json:"pull,omitempty"`
-	Push []SyncInfo `json:"push,omitempty"`
+	Pull []SyncInfo `yaml:"pull,omitempty"`
+	Push []SyncInfo `yaml:"push,omitempty"`
 }
 
 // SyncInfo is path information for synchronize directories
 type SyncInfo struct {
-	Name        string   `json:"name"`
-	Source      string   `json:"source"`
-	Destination string   `json:"destination"`
-	Excludes    []string `json:"excludes,omitempty"`
-	DisableSudo bool     `json:"disable_sudo,omitempty"`
+	Name        string   `yaml:"name"`
+	Source      string   `yaml:"source"`
+	Destination string   `yaml:"destination"`
+	Excludes    []string `yaml:"excludes,omitempty"`
+	DisableSudo bool     `yaml:"disable_sudo,omitempty"`
 }
 
 // BackupConfig is backup: config
 type BackupConfig struct {
-	Destinations []string `json:"destinations"`
-	Includes     []string `json:"includes"`
-	Excludes     []string `json:"excludes,omitempty"`
+	Destinations []string `yaml:"destinations"`
+	Includes     []string `yaml:"includes"`
+	Excludes     []string `yaml:"excludes,omitempty"`
 }
 
 // ReposConfig is repos: config
 type ReposConfig struct {
-	Root string `json:"root"`
+	Root string `yaml:"root"`
 }
 
 var (
@@ -54,19 +55,19 @@ var (
 
 // DotFilesConfig is dotfiles: config
 type DotFilesConfig struct {
-	Dir   string   `json:"dir,omitempty"`
-	Hosts []string `json:"hosts"`
-	Files []string `json:"files"`
+	Dir   string   `yaml:"dir,omitempty"`
+	Hosts []string `yaml:"hosts"`
+	Files []string `yaml:"files"`
 }
 
 // ProxyConfig is proxy: config
 type ProxyConfig struct {
-	Name       string               `json:"name"`
-	User       string               `json:"user,omitempty"`
-	Address    string               `json:"address"`
-	Port       int                  `json:"port,omitempty"`
-	PrivateKey string               `json:"privateKey"`
-	Forward    []ProxyForwardConfig `json:"forward"`
+	Name       string               `yaml:"name"`
+	User       string               `yaml:"user,omitempty"`
+	Address    string               `yaml:"address"`
+	Port       int                  `yaml:"port,omitempty"`
+	PrivateKey string               `yaml:"private_key"`
+	Forward    []ProxyForwardConfig `yaml:"forward"`
 }
 
 // ProxyForwardType is ssh forwarding type
@@ -85,18 +86,29 @@ const (
 
 // ProxyForwardConfig is forward: config in proxy;
 type ProxyForwardConfig struct {
-	Type          ProxyForwardType `json:"type"`
-	BindAddress   string           `json:"bindAddress,omitempty"`
-	BindPort      int              `json:"bindPort"`
-	RemoteAddress string           `json:"remoteAddress,omitempty"`
-	RemotePort    int              `json:"remotePort,omitempty"`
+	Type          ProxyForwardType `yaml:"type"`
+	BindAddress   string           `yaml:"bind_address,omitempty"`
+	BindPort      int              `yaml:"bind_port"`
+	RemoteAddress string           `yaml:"remote_address,omitempty"`
+	RemotePort    int              `yaml:"remote_port,omitempty"`
 }
 
 // NewConfig returns new Config
-func NewConfig(source string) (*Config, error) {
+func NewConfig(source []byte) (*Config, error) {
 	cfg := &Config{}
-	err := yaml.Unmarshal([]byte(source), cfg)
 
+	viper.SetConfigType("yaml")
+
+	err := viper.ReadConfig(bytes.NewBuffer(source))
+	if err != nil {
+		return nil, err
+	}
+
+	yamlTagOption := func(c *mapstructure.DecoderConfig) {
+		c.TagName = "yaml"
+	}
+
+	err = viper.Unmarshal(&cfg, yamlTagOption)
 	if err != nil {
 		return nil, err
 	}

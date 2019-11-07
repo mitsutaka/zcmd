@@ -136,31 +136,31 @@ proxy:
   - name: testforward1
     user: ubuntu
     address: remotehost1
-    privateKey: ~/.ssh/id_rsa
+    private_key: ~/.ssh/id_rsa
     forward:
       # Local forwarding
       - type: local
         # default bindAddress is *
-        bindAddress: localhost
-        bindPort: 13128
-        remoteAddress: localhost
-        remotePort: 3128
+        bind_pddress: localhost
+        bind_port: 13128
+        remote_address: localhost
+        remote_port: 3128
       # Dynamic forwarding for SOCK4, 5
       - type: dynamic
-        bindAddress: localhost
-        bindPort: 1080
+        bind_address: localhost
+        bind_port: 1080
   - name: testforward2
     user: admin
     address: remotehost2
-    privateKey: ~/.ssh/id_ecdsa
+    private_key: ~/.ssh/id_ecdsa
     port: 10000
     forward:
       # Remote forwarding
       - type: remote
-        bindAddress: localhost
-        bindPort: 9000
-        remoteAddress: localhost
-        remotePort: 3000
+        bind_address: localhost
+        bind_port: 9000
+        remote_address: localhost
+        remote_port: 3000
 ```
 
 ### Misc

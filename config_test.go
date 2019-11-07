@@ -12,12 +12,12 @@ func TestConfig(t *testing.T) {
 
 	cases := []struct {
 		name     string
-		source   string
+		source   []byte
 		expected *Config
 	}{
 		{
 			name: "sync-1",
-			source: `
+			source: []byte(`
 sync:
   pull:
     - name: foo
@@ -29,7 +29,7 @@ sync:
       excludes:
         - aaa
         - bbb
-`,
+`),
 			expected: &Config{
 				Sync: SyncConfig{
 					Pull: []SyncInfo{
@@ -55,7 +55,7 @@ sync:
 		},
 		{
 			name: "sync-2",
-			source: `
+			source: []byte(`
 sync:
   push:
     - name: foo
@@ -68,7 +68,7 @@ sync:
         - aaa
         - bbb
       disable_sudo: true
-`,
+`),
 			expected: &Config{
 				Sync: SyncConfig{
 					Push: []SyncInfo{
@@ -94,7 +94,7 @@ sync:
 		},
 		{
 			name: "backup",
-			source: `
+			source: []byte(`
 backup:
   destinations:
     - /backup
@@ -105,7 +105,7 @@ backup:
   excludes:
     - foo
     - bar
-`,
+`),
 			expected: &Config{
 				Backup: BackupConfig{
 					Destinations: []string{"/backup"},
@@ -118,10 +118,10 @@ backup:
 		},
 		{
 			name: "repos",
-			source: `
+			source: []byte(`
 repos:
   root: /repos
-`,
+`),
 			expected: &Config{
 				Repos: ReposConfig{
 					Root: "/repos",
@@ -133,7 +133,7 @@ repos:
 		},
 		{
 			name: "dotfiles-1",
-			source: `
+			source: []byte(`
 dotfiles:
   dir: /home/mitz/.dotfiles
   hosts:
@@ -143,7 +143,7 @@ dotfiles:
     - config/sway/config
     - spacemacs
     - ssh
-`,
+`),
 			expected: &Config{
 				DotFiles: DotFilesConfig{
 					Dir:   "/home/mitz/.dotfiles",
@@ -154,7 +154,7 @@ dotfiles:
 		},
 		{
 			name: "dotfiles-2",
-			source: `
+			source: []byte(`
 dotfiles:
   hosts:
     - YOUR_HOSTNAME
@@ -163,7 +163,7 @@ dotfiles:
     - config/sway/config
     - spacemacs
     - ssh
-`,
+`),
 			expected: &Config{
 				DotFiles: DotFilesConfig{
 					Dir:   defaultDotFilesDir,
@@ -174,37 +174,37 @@ dotfiles:
 		},
 		{
 			name: "proxy",
-			source: `
+			source: []byte(`
 proxy:
   - name: testforward1
     user: ubuntu
     address: remotehost1
-    privateKey: /home/mitz/.ssh/id_rsa
+    private_key: /home/mitz/.ssh/id_rsa
     forward:
       # Local forwarding
       - type: local
         # default bindAddress is *
-        bindAddress: localhost
-        bindPort: 13128
-        remoteAddress: localhost
-        remotePort: 3128
+        bind_address: localhost
+        bind_port: 13128
+        remote_address: localhost
+        remote_port: 3128
       # Dynamic forwarding for SOCK4, 5
       - type: dynamic
-        bindAddress: localhost
-        bindPort: 1080
+        bind_address: localhost
+        bind_port: 1080
   - name: testforward2
     user: admin
     address: remotehost2
-    privateKey: /home/mitz/.ssh/id_ecdsa
+    private_key: /home/mitz/.ssh/id_ecdsa
     port: 10000
     forward:
       # Remote forwarding
       - type: remote
-        bindAddress: localhost
-        bindPort: 9000
-        remoteAddress: localhost
-        remotePort: 3000
-`,
+        bind_address: localhost
+        bind_port: 9000
+        remote_address: localhost
+        remote_port: 3000
+`),
 			expected: &Config{
 				Proxy: []ProxyConfig{
 					{

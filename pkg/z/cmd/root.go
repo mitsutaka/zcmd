@@ -4,6 +4,7 @@ import (
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/mapstructure"
 	"github.com/mitsutaka/zcmd"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -68,7 +69,11 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	if err := viper.Unmarshal(&cfg); err != nil {
+	yamlTagOption := func(c *mapstructure.DecoderConfig) {
+		c.TagName = "yaml"
+	}
+
+	if err := viper.Unmarshal(&cfg, yamlTagOption); err != nil {
 		log.Error(err)
 		os.Exit(1)
 	}
