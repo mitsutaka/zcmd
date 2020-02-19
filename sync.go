@@ -38,7 +38,7 @@ func (s *Sync) Do(ctx context.Context) error {
 
 // GenerateCmd generates rsync command
 func (s *Sync) generateCmd() ([]rsyncClient, error) {
-	var optsRsync = []string{"-avzP", "--stats", "--delete", "--delete-excluded"}
+	var optsRsync = []string{"-avP", "--stats", "--delete", "--delete-excluded"}
 
 	targetSyncs := findTargetSyncs(s.cfgSyncs, s.argSyncs)
 
