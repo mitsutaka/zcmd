@@ -77,13 +77,15 @@ func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 }
 
 func makeSSHConfig(cfg sshClientConfig) *ssh.ClientConfig {
+	var defaultSSHTimeout = 10 * time.Second
+
 	return &ssh.ClientConfig{
 		User: cfg.user,
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(cfg.key),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout:         10 * time.Second,
+		Timeout:         defaultSSHTimeout,
 	}
 }
 
