@@ -17,7 +17,6 @@ var (
 	gitURLs = []string{
 		"https://github.com/mitsutaka/docker-libs",
 		"https://github.com/mitsutaka/kubernetes-coreos",
-		"https://github.com/mitsutaka/submissions",
 	}
 )
 
