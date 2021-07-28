@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-git/go-git/v5"
 	log "github.com/sirupsen/logrus"
-	git "gopkg.in/src-d/go-git.v4"
 )
 
 // DotFiler is client for dotfiles management
