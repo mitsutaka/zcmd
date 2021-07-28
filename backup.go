@@ -7,18 +7,17 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"time"
 )
 
-const (
-	backupPidFile = "/tmp/backup.pid"
-	datePath      = "backup-0000-00-00-000000"
-)
+const backupPidFile = "/tmp/backup.pid"
 
 // Backup is client for backup
 type Backup struct {
 	destinations []string
 	includes     []string
 	excludes     []string
+	backupPrefix string
 	rsyncFlags   string
 }
 
@@ -28,13 +27,14 @@ func NewBackup(cfg *BackupConfig, rsyncFlags string) Rsync {
 		includes:     cfg.Includes,
 		excludes:     cfg.Excludes,
 		destinations: cfg.Destinations,
+		backupPrefix: cfg.BackupPrefix,
 		rsyncFlags:   rsyncFlags,
 	}
 }
 
 // Do is main backup process
 func (b *Backup) Do(ctx context.Context) error {
-	rcs, err := b.generateCmd()
+	rcs, err := b.generateCmd(time.Now().Format(time.RFC3339))
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (b *Backup) Do(ctx context.Context) error {
 }
 
 // GenerateCmd generates rsync command
-func (b *Backup) generateCmd() ([]rsyncClient, error) {
+func (b *Backup) generateCmd(datePath string) ([]rsyncClient, error) {
 	var optsRsync = []string{"-avxRP", "--stats", "--delete"}
 
 	cmdRsync, err := getRsyncCmd(false)
@@ -87,7 +87,7 @@ func (b *Backup) generateCmd() ([]rsyncClient, error) {
 				return nil, err
 			}
 
-			u.Path = path.Join(u.Path, hostname, datePath)
+			u.Path = path.Join(u.Path, hostname, b.backupPrefix+datePath)
 			dst = u.String()
 
 			cmd = append(cmd, cmdRsync...)

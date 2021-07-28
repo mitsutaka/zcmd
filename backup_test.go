@@ -4,11 +4,13 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestBackup(t *testing.T) {
 	t.Parallel()
 
+	now := time.Now().Format(time.RFC3339)
 	hostname, err := os.Hostname()
 	if err != nil {
 		t.Fatal(err)
@@ -30,17 +32,17 @@ func TestBackup(t *testing.T) {
 			expected: []rsyncClient{
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "/", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+						"-avxRP", "--stats", "--delete", "/", "/backup/" + hostname + "/" + now},
 					excludeFile: nil,
 				},
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "/boot", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+						"-avxRP", "--stats", "--delete", "/boot", "/backup/" + hostname + "/" + now},
 					excludeFile: nil,
 				},
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "/home", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+						"-avxRP", "--stats", "--delete", "/home", "/backup/" + hostname + "/" + now},
 					excludeFile: nil,
 				},
 			},
@@ -55,17 +57,16 @@ func TestBackup(t *testing.T) {
 			expected: []rsyncClient{
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "-n", "/", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+						"-avxRP", "--stats", "--delete", "-n", "/", "/backup/" + hostname + "/" + now},
 					excludeFile: nil,
 				},
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "-n", "/boot", "/backup/" + hostname + "/backup-0000-00-00-000000"},
-					excludeFile: nil,
+						"-avxRP", "--stats", "--delete", "-n", "/boot", "/backup/" + hostname + "/" + now},
 				},
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "-n", "/home", "/backup/" + hostname + "/backup-0000-00-00-000000"},
+						"-avxRP", "--stats", "--delete", "-n", "/home", "/backup/" + hostname + "/" + now},
 					excludeFile: nil,
 				},
 			},
@@ -80,7 +81,7 @@ func TestBackup(t *testing.T) {
 			expected: []rsyncClient{
 				{
 					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avxRP", "--stats", "--delete", "/", "rsync://localhost/backup/" + hostname + "/backup-0000-00-00-000000"},
+						"-avxRP", "--stats", "--delete", "/", "rsync://localhost/backup/" + hostname + "/" + now},
 					excludeFile: nil,
 				},
 			},
@@ -94,7 +95,7 @@ func TestBackup(t *testing.T) {
 
 		t.Run(c.name, func(t *testing.T) {
 			bk := NewBackup(&cfg, rsyncFlags)
-			rcs, err := bk.generateCmd()
+			rcs, err := bk.generateCmd(now)
 
 			if err != nil {
 				t.Error(err)

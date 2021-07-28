@@ -40,6 +40,7 @@ type BackupConfig struct {
 	Destinations []string `yaml:"destinations"`
 	Includes     []string `yaml:"includes"`
 	Excludes     []string `yaml:"excludes,omitempty"`
+	BackupPrefix string   `yaml:"prefix,omitempty"`
 }
 
 // ReposConfig is repos: config

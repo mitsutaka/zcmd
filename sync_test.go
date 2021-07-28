@@ -223,7 +223,7 @@ func testGenerateCmd(t *testing.T) {
 
 		t.Run(c.name, func(t *testing.T) {
 			sync := NewSync(cfgs, args, rsyncFlags)
-			rcs, err := sync.generateCmd()
+			rcs, err := sync.generateCmd("")
 
 			if err != nil {
 				t.Error(err)

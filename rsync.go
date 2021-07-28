@@ -36,7 +36,7 @@ type Rsync interface {
 	Do(ctx context.Context) error
 
 	// generateCmd returns generated rsync commands
-	generateCmd() ([]rsyncClient, error)
+	generateCmd(string) ([]rsyncClient, error)
 }
 
 // getRsyncCmd returns rsync command and arguments for each platform
