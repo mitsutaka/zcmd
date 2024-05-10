@@ -12,7 +12,7 @@ import (
 	"github.com/cybozu-go/well"
 )
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var (
 	gitURLs = []string{
 		"https://github.com/mitsutaka/docker-libs",
@@ -36,7 +36,6 @@ func gitClone(dir string) ([]string, error) {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err = cmd.Run()
-
 		if err != nil {
 			return nil, err
 		}

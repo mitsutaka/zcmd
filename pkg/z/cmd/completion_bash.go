@@ -8,7 +8,7 @@ import (
 )
 
 // completionBashCmd represents the completion command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var completionBashCmd = &cobra.Command{
 	Use:   "bash",
 	Short: "Generate bash completion scripts",
@@ -29,7 +29,7 @@ To configure your bash shell to load completions for each session add to your ba
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	completionCmd.AddCommand(completionBashCmd)
 }

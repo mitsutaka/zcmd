@@ -11,14 +11,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var reposUpdateOpts struct {
 	dryRun bool
 	job    int
 }
 
 // reposUpdateCmd represents the repos update command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var reposUpdateCmd = &cobra.Command{
 	Use:   "repos-update",
 	Short: "git clean, checkout and pull",
@@ -54,7 +54,7 @@ var reposUpdateCmd = &cobra.Command{
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	reposUpdateCmd.Flags().BoolVarP(&reposUpdateOpts.dryRun, "dry-run", "n", false, "only show git repositories")
 	reposUpdateCmd.Flags().IntVarP(&reposUpdateOpts.job, "job", "j", runtime.NumCPU(), "number of jobs")

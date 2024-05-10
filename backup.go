@@ -44,7 +44,7 @@ func (b *Backup) Do(ctx context.Context) error {
 
 // GenerateCmd generates rsync command
 func (b *Backup) generateCmd(datePath string) ([]rsyncClient, error) {
-	var optsRsync = []string{"-avxRP", "--stats", "--delete"}
+	optsRsync := []string{"-avxRP", "--stats", "--delete"}
 
 	cmdRsync, err := getRsyncCmd(false)
 	if err != nil {
@@ -53,7 +53,6 @@ func (b *Backup) generateCmd(datePath string) ([]rsyncClient, error) {
 
 	cmdRsync = append(cmdRsync, optsRsync...)
 	hostname, err := os.Hostname()
-
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +81,6 @@ func (b *Backup) generateCmd(datePath string) ([]rsyncClient, error) {
 			var cmd []string
 
 			u, err := url.Parse(dst)
-
 			if err != nil {
 				return nil, err
 			}

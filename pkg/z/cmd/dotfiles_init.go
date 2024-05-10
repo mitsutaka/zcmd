@@ -11,7 +11,7 @@ import (
 )
 
 // dotfilesInitCmd represents the dotfiles init command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var dotfilesInitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "init setup dotfiles with your git dotfiles repository",
@@ -37,7 +37,7 @@ var dotfilesInitCmd = &cobra.Command{
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	dotfilesCmd.AddCommand(dotfilesInitCmd)
 }

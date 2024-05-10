@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 const (
 	gitURL = "https://github.com/mitsutaka/docker-libs.git"
 )

@@ -131,13 +131,17 @@ func testGenerateCmd(t *testing.T) {
 			args: []string{},
 			expected: []rsyncClient{
 				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+					command: []string{
+						"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo",
+					},
 					excludeFile: nil,
 				},
 				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+					command: []string{
+						"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar",
+					},
 					excludeFile: nil,
 				},
 			},
@@ -159,8 +163,10 @@ func testGenerateCmd(t *testing.T) {
 			args: []string{"foo"},
 			expected: []rsyncClient{
 				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+					command: []string{
+						"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo",
+					},
 					excludeFile: nil,
 				},
 			},
@@ -183,13 +189,17 @@ func testGenerateCmd(t *testing.T) {
 			args: []string{"foo", "bar"},
 			expected: []rsyncClient{
 				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo"},
+					command: []string{
+						"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/foo/", "/tmp/foo",
+					},
 					excludeFile: nil,
 				},
 				{
-					command: []string{"/usr/bin/rsync",
-						"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar"},
+					command: []string{
+						"/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "/bar/", "/tmp/bar",
+					},
 					excludeFile: nil,
 				},
 			},
@@ -207,8 +217,10 @@ func testGenerateCmd(t *testing.T) {
 			rsyncFlags: "-nv",
 			expected: []rsyncClient{
 				{
-					command: []string{"/usr/bin/sudo", "-E", "/usr/bin/rsync",
-						"-avP", "--stats", "--delete", "--delete-excluded", "-nv", "rsync://localhost/foo/", "/tmp/foo"},
+					command: []string{
+						"/usr/bin/sudo", "-E", "/usr/bin/rsync",
+						"-avP", "--stats", "--delete", "--delete-excluded", "-nv", "rsync://localhost/foo/", "/tmp/foo",
+					},
 					excludeFile: nil,
 				},
 			},
@@ -224,7 +236,6 @@ func testGenerateCmd(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			sync := NewSync(cfgs, args, rsyncFlags)
 			rcs, err := sync.generateCmd("")
-
 			if err != nil {
 				t.Error(err)
 			}

@@ -12,14 +12,14 @@ import (
 
 //nolint[dupl]
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var syncPushCmdOpts struct {
 	rsyncFlags string
 	syncPaths  []string
 }
 
 // syncPushCmd represents the sync push command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var syncPushCmd = &cobra.Command{
 	Use:   "push [-n] PATH",
 	Short: "push command pushes given PATH local directory to given PATH in the remote server",
@@ -54,7 +54,7 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	syncPushCmd.Flags().StringVarP(&syncPushCmdOpts.rsyncFlags, "rsync-flags", "r", "", "rsync flags")
 	syncCmd.AddCommand(syncPushCmd)

@@ -46,7 +46,6 @@ func (d *DotFiler) Init(ctx context.Context, gitURL string) error {
 		URL:      gitURL,
 		Progress: os.Stdout,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -87,7 +86,7 @@ func (d *DotFiler) MakeSymlinks() error {
 		dst := filepath.Join(d.homeDir, "."+p)
 		dstDir := filepath.Dir(dst)
 
-		err := os.MkdirAll(dstDir, 0755)
+		err := os.MkdirAll(dstDir, 0o755)
 		if err != nil {
 			return err
 		}

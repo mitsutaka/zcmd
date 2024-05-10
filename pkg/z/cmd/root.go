@@ -11,14 +11,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var (
 	cfgFile string
 	cfg     *zcmd.Config
 )
 
 // rootCmd represents the base command when called without any subcommands
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var rootCmd = &cobra.Command{
 	Use:   "z",
 	Short: "mitZ's command line collections",
@@ -34,7 +34,7 @@ func Execute() {
 	}
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	cobra.OnInitialize(initConfig)
 

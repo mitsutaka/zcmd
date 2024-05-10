@@ -11,7 +11,7 @@ import (
 )
 
 // proxyCmd represents the proxy command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var proxyCmd = &cobra.Command{
 	Use:   "proxy",
 	Short: "make ssh forwarding",
@@ -37,7 +37,7 @@ var proxyCmd = &cobra.Command{
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	rootCmd.AddCommand(proxyCmd)
 }

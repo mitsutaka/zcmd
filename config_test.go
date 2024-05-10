@@ -110,7 +110,8 @@ backup:
 				Backup: BackupConfig{
 					Destinations: []string{"/backup"},
 					Includes:     []string{"/", "/boot", "/home"},
-					Excludes:     []string{"foo", "bar"}},
+					Excludes:     []string{"foo", "bar"},
+				},
 				DotFiles: DotFilesConfig{
 					Dir: defaultDotFilesDir,
 				},

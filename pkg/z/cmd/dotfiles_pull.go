@@ -11,7 +11,7 @@ import (
 )
 
 // dotfilesPullCmd represents the dotfiles init command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var dotfilesPullCmd = &cobra.Command{
 	Use:   "pull",
 	Short: "pull download latest changes and create symlinks",
@@ -38,7 +38,7 @@ var dotfilesPullCmd = &cobra.Command{
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	dotfilesCmd.AddCommand(dotfilesPullCmd)
 }

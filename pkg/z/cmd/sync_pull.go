@@ -12,14 +12,14 @@ import (
 
 //nolint[dupl]
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var syncPullCmdOpts struct {
 	rsyncFlags string
 	syncPaths  []string
 }
 
 // syncPullCmd represents the sync pull command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var syncPullCmd = &cobra.Command{
 	Use:   "pull [PATH]",
 	Short: "pull command pulls given PATH data to given PATH local directory",
@@ -54,7 +54,7 @@ When PATH is not given, all PATHs in configuration file will be synchronized.`,
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	syncPullCmd.Flags().StringVarP(&syncPullCmdOpts.rsyncFlags, "rsync-flags", "r", "", "rsync flags")
 	syncCmd.AddCommand(syncPullCmd)

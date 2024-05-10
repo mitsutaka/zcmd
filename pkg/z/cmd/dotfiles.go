@@ -5,14 +5,14 @@ import (
 )
 
 // dotfilesCmd represents the dotfiles command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var dotfilesCmd = &cobra.Command{
 	Use:   "dotfiles",
 	Short: "dotfiles subcommand is dotfiles management",
 	Long:  `dotfiles subcommand is dotfiles management.`,
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	rootCmd.AddCommand(dotfilesCmd)
 }

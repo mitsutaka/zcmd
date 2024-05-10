@@ -19,7 +19,7 @@ const (
 	cmdRsyncLinux = "/usr/bin/rsync"
 )
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var (
 	// sudoCmd is default sudo command
 	sudoCmd = []string{"/usr/bin/sudo", "-E"}
@@ -78,7 +78,6 @@ func runRsyncCmd(ctx context.Context, name, pidFile string, rcs []rsyncClient) e
 	}
 
 	err = pid.Close()
-
 	if err != nil {
 		return err
 	}

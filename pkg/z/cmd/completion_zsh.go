@@ -8,7 +8,7 @@ import (
 )
 
 // completionZshCmd represents the completion command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var completionZshCmd = &cobra.Command{
 	Use:   "zsh",
 	Short: "Generate zsh completion scripts",
@@ -29,7 +29,7 @@ To configure your zsh shell to load completions for each session add to your zsh
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	completionCmd.AddCommand(completionZshCmd)
 }

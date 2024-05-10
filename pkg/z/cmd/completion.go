@@ -5,14 +5,14 @@ import (
 )
 
 // completionCmd represents the nas command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var completionCmd = &cobra.Command{
 	Use:   "completion",
 	Short: "Generate bash completion scripts",
 	Long:  `Generate completion scripts`,
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	rootCmd.AddCommand(completionCmd)
 }

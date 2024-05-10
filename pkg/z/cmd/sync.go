@@ -5,14 +5,14 @@ import (
 )
 
 // syncCmd represents the nas command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "sync subcommand synchronizes data with the remote server",
 	Long:  `sync subcommand synchronizes data with the remote server.`,
 }
 
-//nolint
+// nolint
 func init() {
 	rootCmd.AddCommand(syncCmd)
 }

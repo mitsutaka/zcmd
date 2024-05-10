@@ -61,11 +61,9 @@ func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 	}
 
 	signer, err := ssh.ParsePrivateKey(buff)
-
 	if err != nil {
 		var passphrase string
 		err := Ask(&passphrase, "ssh passphrase for "+keyPath, true)
-
 		if err != nil {
 			return nil, err
 		}
@@ -77,7 +75,7 @@ func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 }
 
 func makeSSHConfig(cfg sshClientConfig) *ssh.ClientConfig {
-	var defaultSSHTimeout = 10 * time.Second
+	defaultSSHTimeout := 10 * time.Second
 
 	return &ssh.ClientConfig{
 		User: cfg.user,

@@ -48,11 +48,9 @@ type ReposConfig struct {
 	Root string `yaml:"root"`
 }
 
-var (
-	// nolint[gochecknoglobals]
-	// defaultDotFilesDir is default dotfiles directory path
-	defaultDotFilesDir = filepath.Join(os.Getenv("HOME"), ".zdotfiles")
-)
+// nolint[gochecknoglobals]
+// defaultDotFilesDir is default dotfiles directory path
+var defaultDotFilesDir = filepath.Join(os.Getenv("HOME"), ".zdotfiles")
 
 // DotFilesConfig is dotfiles: config
 type DotFilesConfig struct {
@@ -154,7 +152,6 @@ func Ask(param *string, query string, hide bool) error {
 		Loop:     true,
 		Hide:     hide,
 	})
-
 	if err != nil {
 		return err
 	}

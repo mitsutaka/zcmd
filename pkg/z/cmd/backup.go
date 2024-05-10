@@ -10,13 +10,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var backupOpts struct {
 	rsyncFlags string
 }
 
 // backupCmd represents the backup command
-//nolint[gochecknoglobals]
+// nolint[gochecknoglobals]
 var backupCmd = &cobra.Command{
 	Use:   "backup",
 	Short: "backup local data to the remote server",
@@ -38,7 +38,7 @@ var backupCmd = &cobra.Command{
 	},
 }
 
-//nolint[gochecknoinits]
+// nolint[gochecknoinits]
 func init() {
 	backupCmd.Flags().StringVarP(&backupOpts.rsyncFlags, "rsync-flags", "r", "", "rsync flags")
 	rootCmd.AddCommand(backupCmd)
